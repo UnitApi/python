@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.7] - 2025-04-30
+
+### Added
+- Changes in examples/keyboard_text_input.py
+- Changes in examples/mouse_movement.py
+- Changes in examples/mouse_movement_pyautogui.py
+
 ## [0.1.6] - 2025-04-30
 
 ### Added

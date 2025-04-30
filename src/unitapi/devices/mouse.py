@@ -1,10 +1,12 @@
 """
-Mouse device implementation.
+Mouse device implementation with physical mouse control using PyAutoGUI.
 """
 
 import asyncio
 import logging
 from typing import Dict, Any, Optional, Tuple
+
+import pyautogui
 
 from .base import InputDevice, DeviceStatus
 
@@ -31,12 +33,32 @@ class MouseDevice(InputDevice):
         self.logger = logging.getLogger(__name__)
         
         # Mouse-specific attributes
-        self.position = (0, 0)  # Current mouse position (x, y)
+        self._position = pyautogui.position()  # Get initial physical mouse position
         self.buttons_state = {
             "left": False,
             "right": False,
             "middle": False,
         }
+    
+    @property
+    def position(self) -> Tuple[int, int]:
+        """
+        Get the current physical mouse position.
+        
+        Returns:
+            Current mouse position as (x, y) tuple
+        """
+        return pyautogui.position()
+    
+    @position.setter
+    def position(self, pos: Tuple[int, int]) -> None:
+        """
+        Set the internal position tracking (not the actual mouse position).
+        
+        Args:
+            pos: Position as (x, y) tuple
+        """
+        self._position = pos
 
     async def move_to(self, x: int, y: int) -> Dict[str, Any]:
         """
@@ -51,9 +73,12 @@ class MouseDevice(InputDevice):
         """
         try:
             self.logger.info(f"Moving mouse to position ({x}, {y})")
-            # Simulate mouse movement
-            await asyncio.sleep(0.1)
-            self.position = (x, y)
+            
+            # Move the physical mouse using PyAutoGUI
+            pyautogui.moveTo(x, y)
+            
+            # Update internal position tracking
+            self._position = (x, y)
             
             return {
                 "status": "success",
@@ -80,9 +105,11 @@ class MouseDevice(InputDevice):
             new_x, new_y = x + dx, y + dy
             self.logger.info(f"Moving mouse by ({dx}, {dy}) to ({new_x}, {new_y})")
             
-            # Simulate mouse movement
-            await asyncio.sleep(0.1)
-            self.position = (new_x, new_y)
+            # Move the physical mouse using PyAutoGUI
+            pyautogui.moveRel(dx, dy)
+            
+            # Update internal position tracking
+            self._position = (new_x, new_y)
             
             return {
                 "status": "success",
@@ -109,10 +136,8 @@ class MouseDevice(InputDevice):
                 
             self.logger.info(f"Clicking {button} mouse button at {self.position}")
             
-            # Simulate button press and release
-            await self.button_down(button)
-            await asyncio.sleep(0.1)
-            await self.button_up(button)
+            # Click the physical mouse using PyAutoGUI
+            pyautogui.click(button=button)
             
             return {
                 "status": "success",
@@ -140,10 +165,8 @@ class MouseDevice(InputDevice):
                 
             self.logger.info(f"Double-clicking {button} mouse button at {self.position}")
             
-            # Simulate double-click
-            await self.click(button)
-            await asyncio.sleep(0.1)
-            await self.click(button)
+            # Double-click the physical mouse using PyAutoGUI
+            pyautogui.doubleClick(button=button)
             
             return {
                 "status": "success",
@@ -171,7 +194,10 @@ class MouseDevice(InputDevice):
                 
             self.logger.info(f"Pressing {button} mouse button at {self.position}")
             
-            # Simulate button press
+            # Press the physical mouse button using PyAutoGUI
+            pyautogui.mouseDown(button=button)
+            
+            # Update button state
             self.buttons_state[button] = True
             
             return {
@@ -201,7 +227,10 @@ class MouseDevice(InputDevice):
                 
             self.logger.info(f"Releasing {button} mouse button at {self.position}")
             
-            # Simulate button release
+            # Release the physical mouse button using PyAutoGUI
+            pyautogui.mouseUp(button=button)
+            
+            # Update button state
             self.buttons_state[button] = False
             
             return {
@@ -229,8 +258,8 @@ class MouseDevice(InputDevice):
             direction = "up" if amount > 0 else "down"
             self.logger.info(f"Scrolling {direction} by {abs(amount)} at {self.position}")
             
-            # Simulate scrolling
-            await asyncio.sleep(0.1)
+            # Scroll the physical mouse wheel using PyAutoGUI
+            pyautogui.scroll(amount)
             
             return {
                 "status": "success",
@@ -258,12 +287,8 @@ class MouseDevice(InputDevice):
             start_x, start_y = self.position
             self.logger.info(f"Dragging from ({start_x}, {start_y}) to ({x}, {y}) with {button} button")
             
-            # Simulate drag operation
-            await self.button_down(button)
-            await asyncio.sleep(0.1)
-            await self.move_to(x, y)
-            await asyncio.sleep(0.1)
-            await self.button_up(button)
+            # Drag the physical mouse using PyAutoGUI
+            pyautogui.dragTo(x, y, button=button)
             
             return {
                 "status": "success",

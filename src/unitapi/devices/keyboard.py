@@ -1,10 +1,12 @@
 """
-Keyboard device implementation.
+Keyboard device implementation with physical keyboard control using PyAutoGUI.
 """
 
 import asyncio
 import logging
 from typing import Dict, Any, Optional, List, Set
+
+import pyautogui
 
 from .base import InputDevice, DeviceStatus
 
@@ -53,15 +55,15 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Pressing key: {key}")
             
+            # Press the physical key using PyAutoGUI
+            pyautogui.keyDown(key)
+            
             # Handle modifier keys
             if key.lower() in self.modifiers:
                 self.modifiers[key.lower()] = True
             
             # Add to pressed keys
             self.pressed_keys.add(key)
-            
-            # Simulate key press
-            await asyncio.sleep(0.05)
             
             return {
                 "status": "success",
@@ -86,6 +88,9 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Releasing key: {key}")
             
+            # Release the physical key using PyAutoGUI
+            pyautogui.keyUp(key)
+            
             # Handle modifier keys
             if key.lower() in self.modifiers:
                 self.modifiers[key.lower()] = False
@@ -93,9 +98,6 @@ class KeyboardDevice(InputDevice):
             # Remove from pressed keys
             if key in self.pressed_keys:
                 self.pressed_keys.remove(key)
-            
-            # Simulate key release
-            await asyncio.sleep(0.05)
             
             return {
                 "status": "success",
@@ -120,10 +122,8 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Pressing and releasing key: {key}")
             
-            # Simulate key press and release
-            await self.key_down(key)
-            await asyncio.sleep(0.05)
-            result = await self.key_up(key)
+            # Press and release the physical key using PyAutoGUI
+            pyautogui.press(key)
             
             return {
                 "status": "success",
@@ -147,10 +147,8 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Typing text: {text}")
             
-            # Simulate typing each character
-            for char in text:
-                await self.press_key(char)
-                await asyncio.sleep(0.05)  # Small delay between keypresses
+            # Type the text using PyAutoGUI
+            pyautogui.write(text)
             
             return {
                 "status": "success",
@@ -176,15 +174,13 @@ class KeyboardDevice(InputDevice):
             key_list = list(keys)
             self.logger.info(f"Pressing hotkey: {'+'.join(key_list)}")
             
-            # Press all keys in sequence
-            for key in key_list:
-                await self.key_down(key)
-                await asyncio.sleep(0.05)
+            # Press the hotkey combination using PyAutoGUI
+            pyautogui.hotkey(*key_list)
             
-            # Release all keys in reverse order
-            for key in reversed(key_list):
-                await self.key_up(key)
-                await asyncio.sleep(0.05)
+            # Update internal state
+            for key in key_list:
+                if key.lower() in self.modifiers:
+                    self.modifiers[key.lower()] = False
             
             return {
                 "status": "success",
@@ -193,10 +189,6 @@ class KeyboardDevice(InputDevice):
             }
         except Exception as e:
             self.logger.error(f"Hotkey press failed: {e}")
-            # Ensure all keys are released in case of error
-            for key in keys:
-                if key in self.pressed_keys:
-                    await self.key_up(key)
             return {"error": str(e)}
 
     async def release_all_keys(self) -> Dict[str, Any]:
@@ -214,12 +206,17 @@ class KeyboardDevice(InputDevice):
             
             # Release all keys
             for key in keys_to_release:
-                await self.key_up(key)
-                await asyncio.sleep(0.02)
+                pyautogui.keyUp(key)
+                self.pressed_keys.remove(key)
             
             # Reset modifiers
             for mod in self.modifiers:
                 self.modifiers[mod] = False
+                # Make sure modifier keys are released
+                try:
+                    pyautogui.keyUp(mod)
+                except:
+                    pass
             
             return {
                 "status": "success",
