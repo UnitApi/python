@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.11] - 2025-04-30
+
+### Added
+- Changes in examples/rpi/camera_module.py
+- Changes in examples/rpi/gpio_control.py
+- Changes in examples/rpi/led_control.py
+- Changes in examples/rpi/sensors.py
+- Changes in scripts/rpi/README.md
+- Changes in scripts/rpi/remote_update.sh
+- Changes in scripts/rpi/update.sh
+- Changes in scripts/ssh.sh
+
 ## [0.1.10] - 2025-04-30
 
 ### Added

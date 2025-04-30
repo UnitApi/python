@@ -54,12 +54,6 @@ ssh_connect() {
         ssh_opts="$ssh_opts -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1"
     fi
     
-    # Set authentication options based on authentication method
-    if [ -n "$RPI_PASSWORD" ] && [ -z "$IDENTITY_FILE" ]; then
-        # Explicitly disable pubkey authentication to prevent "too many authentication failures"
-        ssh_opts="$ssh_opts -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1"
-    fi
-    
     # Use sshpass if password is provided
     if [ -n "$RPI_PASSWORD" ]; then
         # Check if sshpass is installed
