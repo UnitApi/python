@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.19] - 2025-05-01
+
+### Added
+- Changes in Gemfile
+- Changes in _config.yml
+- Changes in docs/footer.md
+- Changes in mermaid.js
+
 ## [0.1.18] - 2025-05-01
 
 ### Added
