@@ -1,26 +1,24 @@
 docs/index.md
 docs/device_types.md
 docs/usage.md
-#docs/examples.md
 docs/installation.md
 docs/protocols.md
-#docs/remote_keyboard_control.md
-#docs/remote_keyboard_server_installation.md
-#docs/remote_speaker_agent.md
 docs/security.md
-#docs/speaker_playback_fix.md
 docs/ssh_tools.md
-# find examples/ -type f -name "*.md" | sort >> flatedit.txt
-# find docs/ -type f -name "*.md" | sort >> flatedit.txt
 examples/docker/README.md
+examples/examples.md
 examples/pc/camera/README.md
 examples/pc/keyboard/README.md
 examples/pc/microphone/README.md
+examples/pc/misc/README.md
 examples/pc/mouse/README.md
 examples/pc/README.md
 examples/pc/speaker/README.md
 examples/README_remote_keyboard_fixed.md
 examples/README_remote_keyboard.md
+examples/remote_keyboard_control.md
+examples/remote_keyboard_server_installation.md
+examples/remote_speaker_agent.md
 examples/rpi/camera/README.md
 examples/rpi/gpio/README.md
 examples/rpi/keyboard/README.md
@@ -29,4 +27,7 @@ examples/rpi/mouse/README.md
 examples/rpi/README.md
 examples/rpi/respeaker/README.md
 examples/rpi/speaker/README.md
+examples/speaker_playback_fix.md
 
+# find examples/ -type f -name "*.md" | sort >> flatedit.txt
+# find docs/ -type f -name "*.md" | sort >> flatedit.txt

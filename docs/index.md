@@ -1,8 +1,8 @@
-# UnitAPI: Universal Interface for Network Devices
+# UnitAPI: Universal Hardware Interface for Network Devices
 
 ## Overview
 
-UnitAPI is a comprehensive Python framework for managing and interacting with network-connected devices across different platforms and protocols. It provides a unified, flexible, and secure approach to device communication and control.
+UnitAPI (Unit Hardware API) is a comprehensive Python framework for managing and interacting with network-connected hardware devices across different platforms and protocols. It provides a unified, flexible, and secure approach to device communication and control.
 
 ## Key Features
 

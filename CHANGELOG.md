@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.18] - 2025-05-01
+
+### Added
+- Changes in examples/examples.md
+- Changes in examples/pc/misc/README.md
+- Changes in examples/remote_keyboard_control.md
+- Changes in examples/remote_keyboard_server_installation.md
+- Changes in examples/remote_speaker_agent.md
+- Changes in examples/speaker_playback_fix.md
+
 ## [0.1.17] - 2025-04-30
 
 ### Added
