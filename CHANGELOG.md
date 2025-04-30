@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.16] - 2025-04-30
+
+### Added
+- Changes in examples/pc/camera/camera_client.py
+- Changes in examples/pc/camera/camera_frame_client.py
+- Changes in examples/pc/camera/camera_server.py
+- Changes in examples/pc/camera/remote_camera_client.py
+- Changes in examples/pc/camera/remote_camera_frame_client.py
+- Changes in examples/pc/camera/screenshot_client.py
+- Changes in examples/pc/keyboard/README.md
+- Changes in examples/pc/keyboard/keyboard_client.py
+- Changes in examples/pc/keyboard/keyboard_server.py
+- Changes in examples/pc/keyboard/remote_keyboard_client.py
+- Changes in examples/pc/mouse/README.md
+- Changes in examples/pc/mouse/mouse_client.py
+- Changes in examples/pc/mouse/mouse_pyautogui_client.py
+- Changes in examples/pc/mouse/mouse_server.py
+
 ## [0.1.15] - 2025-04-30
 
 ## [0.1.14] - 2025-04-30
