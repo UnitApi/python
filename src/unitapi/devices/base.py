@@ -4,7 +4,7 @@ Base device classes for UnitAPI.
 
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Tuple
 
 
 class DeviceStatus(Enum):
@@ -179,3 +179,68 @@ class GPIODevice(BaseDevice):
             Dictionary containing pin value
         """
         return {"status": "success", "pin": pin, "value": False}
+
+
+class InputDevice(BaseDevice):
+    """Base class for input devices like mouse, keyboard, etc."""
+
+    def __init__(
+        self,
+        device_id: str,
+        name: str,
+        device_type: str = "input",
+        metadata: Optional[Dict[str, Any]] = None,
+    ):
+        """Initialize input device."""
+        super().__init__(device_id, name, device_type, metadata)
+        self._event_listeners = []
+
+    async def send_input(self, input_type: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Send input to the device.
+
+        Args:
+            input_type: Type of input (e.g., 'click', 'key_press')
+            input_data: Input data specific to the input type
+
+        Returns:
+            Dictionary containing operation status
+        """
+        return {
+            "status": "success",
+            "device_id": self.device_id,
+            "input_type": input_type,
+            "input_data": input_data,
+        }
+
+    async def register_event_listener(self, callback) -> Dict[str, Any]:
+        """
+        Register a callback function to receive input events.
+
+        Args:
+            callback: Async function to call when an input event occurs
+
+        Returns:
+            Dictionary containing registration status
+        """
+        self._event_listeners.append(callback)
+        return {
+            "status": "success",
+            "device_id": self.device_id,
+            "listener_id": len(self._event_listeners) - 1,
+        }
+
+    async def unregister_event_listener(self, listener_id: int) -> Dict[str, Any]:
+        """
+        Unregister an event listener.
+
+        Args:
+            listener_id: ID of the listener to unregister
+
+        Returns:
+            Dictionary containing unregistration status
+        """
+        if 0 <= listener_id < len(self._event_listeners):
+            self._event_listeners.pop(listener_id)
+            return {"status": "success", "device_id": self.device_id}
+        return {"status": "error", "message": "Invalid listener ID"}

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2025-04-30
+
+### Added
+- Changes in docs/examples.md
+- Changes in docs/security.md
+- Changes in docs/speaker_playback_fix.md
+- Changes in examples/input_devices.py
+- Changes in examples/speaker_audio_playback_fixed.py
+- Changes in examples/speaker_playback_fixed.py
+- Changes in src/unitapi/core/client_fixed.py
+- Changes in src/unitapi/devices/gamepad.py
+- Changes in src/unitapi/devices/keyboard.py
+- Changes in src/unitapi/devices/mouse.py
+- Changes in src/unitapi/devices/touchscreen.py
+- Changes in tests/test_input_devices.py
+
 ## [0.1.5] - 2025-04-30
 
 ### Added
