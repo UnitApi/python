@@ -1,10 +1,10 @@
 # UnitAPI Remote Speaker Agent
 
-This document explains how to install and use the UnitAPI Remote Speaker Agent, which allows you to manage and control speakers on a remote PC via SSH.
+The UnitAPI Remote Speaker Agent allows you to manage and control speakers on a remote PC via SSH. This document explains how to install, configure, and use this feature.
 
 ## Overview
 
-The UnitAPI Remote Speaker Agent is a service that runs on a remote machine and provides access to all speakers on that machine through the UnitAPI protocol. This allows you to:
+The Remote Speaker Agent is a service that runs on a remote machine and provides access to all speakers on that machine through the UnitAPI protocol. This allows you to:
 
 - Discover all speakers on the remote machine
 - Play audio on specific speakers
@@ -12,25 +12,6 @@ The UnitAPI Remote Speaker Agent is a service that runs on a remote machine and 
 - Stream audio from one machine to speakers on another
 
 ## Installation
-
-Before installing on a remote machine, you can test your local setup to ensure everything works correctly.
-
-### 0. Testing Your Local Setup
-
-You can test your local speaker setup before deploying to a remote machine:
-
-```bash
-# Run the local test script
-scripts/test_speaker_agent.sh
-```
-
-This script will:
-1. Check if PyAudio is installed and offer to install it if needed
-2. Detect all speakers on your local machine
-3. Optionally test all speakers by playing a test tone
-4. Provide guidance for proceeding with remote installation
-
-After confirming your local setup works correctly, you can proceed with one of the following installation methods:
 
 There are two ways to install the Remote Speaker Agent:
 
@@ -101,23 +82,40 @@ ssh user@remote-host 'sudo unitapi-speaker --disable'
 
 ## Connecting to the Remote Speaker Agent
 
-### Using the Local Test Script
+### Using the Python Client
 
-Before connecting to a remote speaker agent, you can test your local speakers:
+To connect to the Remote Speaker Agent from another machine, you can use the UnitAPI client:
 
-```bash
-# Test your local speakers
-scripts/test_speaker_agent.sh
+```python
+from unitapi.core.client import UnitAPIClient
+import asyncio
+
+async def main():
+    # Create a client
+    client = UnitAPIClient(server_host='remote-host', server_port=7890)
+    
+    # List available speakers
+    devices = await client.list_devices(device_type='speaker')
+    print("Available Speakers:", devices)
+    
+    # Play audio on a specific speaker
+    await client.execute_command(
+        device_id='speaker_01',
+        command='play_audio',
+        params={
+            'file': 'path/to/audio.wav'
+        }
+    )
+
+# Run the async function
+asyncio.run(main())
 ```
 
-### Connecting to Remote Speakers
+### Using the Command-Line Client
 
-To connect to the Remote Speaker Agent from another machine, you can use the provided client script:
+If you used the remote installation script, a client script was created for you:
 
 ```bash
-# If you used the remote installation script, a client script was created for you
-python remote_speaker_client.py --host remote-host --list
-
 # List all available speakers
 python remote_speaker_client.py --host remote-host --list
 
@@ -133,6 +131,30 @@ python remote_speaker_client.py --host remote-host --device speaker_id --file pa
 # Play a test tone with custom frequency and duration
 python remote_speaker_client.py --host remote-host --device speaker_id --frequency 880 --duration 2.0
 ```
+
+## Docker Example
+
+UnitAPI includes a Docker Compose example that demonstrates how to set up a virtual speaker server on one machine and a client on another machine using Docker. This example simulates the process of installing the UnitAPI speaker agent on a remote PC and controlling its speakers.
+
+To use this example:
+
+```bash
+# Navigate to the docker example directory
+cd examples/docker
+
+# Start the containers
+docker-compose up -d
+
+# View the logs
+docker-compose logs -f
+
+# Access the client container and test the speakers
+docker exec -it unitapi-speaker-client bash
+python /opt/unitapi/client.py --host 172.28.1.2 --list
+python /opt/unitapi/client.py --host 172.28.1.2 --test
+```
+
+For more details, see the [Docker example README](../examples/docker/README.md).
 
 ## Technical Details
 
@@ -185,35 +207,6 @@ If you encounter issues with the Remote Speaker Agent, check the following:
 
 ## Advanced Usage
 
-### Docker Example
-
-We've created a Docker Compose example that demonstrates how to set up a virtual speaker server on one machine (PC1) and a client on another machine (PC2). The client installs the UnitAPI speaker agent on the server using SSH and then connects to it to control the virtual speakers.
-
-To use this example:
-
-```bash
-# Navigate to the docker example directory
-cd examples/docker
-
-# Start the containers
-docker-compose up -d
-
-# View the logs
-docker-compose logs -f
-
-# Access the client container and test the speakers
-docker exec -it unitapi-speaker-client bash
-python /opt/unitapi/client.py --host 172.28.1.2 --list
-python /opt/unitapi/client.py --host 172.28.1.2 --test
-```
-
-This example is useful for:
-- Testing the UnitAPI speaker agent in a controlled environment
-- Demonstrating the SSH installation process
-- Learning how to use the UnitAPI speaker agent with virtual speakers
-
-For more details, see the [Docker example README](../examples/docker/README.md).
-
 ### Custom Configuration
 
 You can customize the Remote Speaker Agent by editing the configuration file:
@@ -263,8 +256,3 @@ cameras = await camera_client.list_devices(device_type="camera")
 
 # Create a complete IoT system
 # ...
-```
-
-## License
-
-The UnitAPI Remote Speaker Agent is part of the UnitAPI project and is licensed under the same license as UnitAPI.

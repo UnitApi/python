@@ -15,7 +15,6 @@ UnitAPI is a comprehensive Python framework for managing and interacting with ne
 ### 2. Communication Protocols
 - WebSocket
 - MQTT
-- gRPC
 - Custom protocol extensions
 
 ### 3. Security
@@ -25,9 +24,9 @@ UnitAPI is a comprehensive Python framework for managing and interacting with ne
 - Audit logging
 
 ### 4. Device Types
-- Sensors
 - Cameras
-- Audio Devices
+- Microphones
+- Speakers
 - GPIO Controllers
 - Custom device implementations
 
@@ -71,7 +70,6 @@ pip install unitapi
 # Install with specific protocol support
 pip install unitapi[mqtt]
 pip install unitapi[websocket]
-pip install unitapi[grpc]
 ```
 
 ### Basic Usage
@@ -133,6 +131,7 @@ print("Available Devices:", devices)
 - Remote Monitoring
 - Network Device Management
 - Distributed Sensor Networks
+- Remote Audio Control
 
 ## Documentation Sections
 
@@ -142,6 +141,7 @@ print("Available Devices:", devices)
 4. [Protocols](protocols.md)
 5. [Security](security.md)
 6. [Examples](examples.md)
+7. [Remote Speaker Agent](remote_speaker_agent.md)
 
 ## Contributing
 
@@ -149,7 +149,7 @@ We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING
 
 ## Support
 
-- GitHub Issues: [UnitAPI Issues](https://github.com/yourusername/unitapi/issues)
+- GitHub Issues: [UnitAPI Issues](https://github.com/yourUnitApi/python/issues)
 - Email: support@unitapi.com
 
 ## License
@@ -158,7 +158,7 @@ UnitAPI is open-source software licensed under the MIT License.
 
 ## Version
 
-Current Version: 0.1.0
+Current Version: 0.1.5
 
 ## Compatibility
 
@@ -167,6 +167,7 @@ Current Version: 0.1.0
   - Windows 10/11
   - macOS 10.15+
   - Linux (Ubuntu 20.04+, Debian 10+)
+  - Raspberry Pi (Raspbian/Raspberry Pi OS)
 
 ## Performance Characteristics
 
@@ -182,6 +183,7 @@ Current Version: 0.1.0
 - More device type support
 - Advanced discovery mechanisms
 - Cloud service integrations
+- Improved remote device management
 
 ## Disclaimer
 

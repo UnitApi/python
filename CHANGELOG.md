@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2025-04-30
+
+### Added
+- Changes in docs/remote_speaker_agent.md
+- Changes in examples/docker/README.md
+- Changes in examples/docker/speaker-client/Dockerfile
+- Changes in examples/docker/speaker-client/client.py
+- Changes in examples/docker/speaker-client/entrypoint.sh
+- Changes in examples/docker/speaker-server/virtual_speaker.py
+
 ## [0.1.4] - 2025-04-30
 
 ### Added

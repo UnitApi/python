@@ -21,22 +21,19 @@ pip install unitapi[mqtt]
 
 # Install with WebSocket support
 pip install unitapi[websocket]
-
-# Install with gRPC support
-pip install unitapi[grpc]
 ```
 
 ### 3. From Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/unitapi.git
+git clone https://github.com/yourUnitApi/python.git
 cd unitapi
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Install thepackage
+# Install the package
 pip install .
 ```
 
@@ -59,7 +56,8 @@ python -c "import unitapi; print(unitapi.__version__)"
 ### Optional Dependencies
 - `paho-mqtt` (for MQTT support)
 - `websockets` (for WebSocket support)
-- `grpcio` (for gRPC support)
+- `pyaudio` (for audio device support)
+- `opencv-python` (for camera support)
 
 ## Troubleshooting
 
@@ -81,13 +79,30 @@ python -c "import unitapi; print(unitapi.__version__)"
    pip install unitapi
    ```
 
+4. **PyAudio Installation Issues**
+   - On Linux, you may need to install PortAudio development headers:
+   ```bash
+   sudo apt-get install portaudio19-dev
+   pip install pyaudio
+   ```
+   - On macOS, you can use Homebrew:
+   ```bash
+   brew install portaudio
+   pip install pyaudio
+   ```
+   - On Windows, you might need to install a pre-built wheel:
+   ```bash
+   pip install pipwin
+   pipwin install pyaudio
+   ```
+
 ## Development Installation
 
 For contributors and developers:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/unitapi.git
+git clone https://github.com/yourUnitApi/python.git
 cd unitapi
 
 # Create virtual environment
@@ -138,3 +153,16 @@ pip install --upgrade unitapi[mqtt]
 ```bash
 pip uninstall unitapi
 ```
+
+## Remote Speaker Agent Installation
+
+For installing the Remote Speaker Agent on a remote machine, see the [Remote Speaker Agent documentation](remote_speaker_agent.md).
+
+### Quick Remote Installation
+
+```bash
+# Install on a remote machine via SSH
+scripts/install_remote_speaker_agent_via_ssh.sh remote-host [remote-user]
+
+# Example:
+scripts/install_remote_speaker_agent_via_ssh.sh 192.168.1.100 pi

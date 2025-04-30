@@ -1,3 +1,4 @@
 docs/index.md
 docs/installation.md
 docs/usage.md
+docs/remote_speaker_agent.md

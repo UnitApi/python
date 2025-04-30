@@ -16,7 +16,6 @@ UnitAPI is a comprehensive Python framework for managing and interacting with ne
 ### 2. Communication Protocols
 - WebSocket
 - MQTT
-- gRPC
 - Custom protocol extensions
 
 ### 3. Security
@@ -26,9 +25,9 @@ UnitAPI is a comprehensive Python framework for managing and interacting with ne
 - Audit logging
 
 ### 4. Device Types
-- Sensors
 - Cameras
-- Audio Devices
+- Microphones
+- Speakers
 - GPIO Controllers
 - Custom device implementations
 
@@ -72,7 +71,6 @@ pip install unitapi
 # Install with specific protocol support
 pip install unitapi[mqtt]
 pip install unitapi[websocket]
-pip install unitapi[grpc]
 ```
 
 ### Basic Usage
@@ -134,6 +132,7 @@ print("Available Devices:", devices)
 - Remote Monitoring
 - Network Device Management
 - Distributed Sensor Networks
+- Remote Audio Control
 
 ## Documentation Sections
 
@@ -143,6 +142,7 @@ print("Available Devices:", devices)
 4. [Protocols](protocols.md)
 5. [Security](security.md)
 6. [Examples](examples.md)
+7. [Remote Speaker Agent](remote_speaker_agent.md)
 
 ## Contributing
 
@@ -150,7 +150,7 @@ We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING
 
 ## Support
 
-- GitHub Issues: [UnitAPI Issues](https://github.com/yourusername/unitapi/issues)
+- GitHub Issues: [UnitAPI Issues](https://github.com/yourUnitApi/python/issues)
 - Email: support@unitapi.com
 
 ## License
@@ -159,7 +159,7 @@ UnitAPI is open-source software licensed under the MIT License.
 
 ## Version
 
-Current Version: 0.1.0
+Current Version: 0.1.5
 
 ## Compatibility
 
@@ -168,6 +168,7 @@ Current Version: 0.1.0
   - Windows 10/11
   - macOS 10.15+
   - Linux (Ubuntu 20.04+, Debian 10+)
+  - Raspberry Pi (Raspbian/Raspberry Pi OS)
 
 ## Performance Characteristics
 
@@ -183,6 +184,7 @@ Current Version: 0.1.0
 - More device type support
 - Advanced discovery mechanisms
 - Cloud service integrations
+- Improved remote device management
 
 ## Disclaimer
 
@@ -217,22 +219,19 @@ pip install unitapi[mqtt]
 
 # Install with WebSocket support
 pip install unitapi[websocket]
-
-# Install with gRPC support
-pip install unitapi[grpc]
 ```
 
 ### 3. From Source
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/unitapi.git
+git clone https://github.com/yourUnitApi/python.git
 cd unitapi
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Install thepackage
+# Install the package
 pip install .
 ```
 
@@ -255,7 +254,8 @@ python -c "import unitapi; print(unitapi.__version__)"
 ### Optional Dependencies
 - `paho-mqtt` (for MQTT support)
 - `websockets` (for WebSocket support)
-- `grpcio` (for gRPC support)
+- `pyaudio` (for audio device support)
+- `opencv-python` (for camera support)
 
 ## Troubleshooting
 
@@ -277,13 +277,30 @@ python -c "import unitapi; print(unitapi.__version__)"
    pip install unitapi
    ```
 
+4. **PyAudio Installation Issues**
+   - On Linux, you may need to install PortAudio development headers:
+   ```bash
+   sudo apt-get install portaudio19-dev
+   pip install pyaudio
+   ```
+   - On macOS, you can use Homebrew:
+   ```bash
+   brew install portaudio
+   pip install pyaudio
+   ```
+   - On Windows, you might need to install a pre-built wheel:
+   ```bash
+   pip install pipwin
+   pipwin install pyaudio
+   ```
+
 ## Development Installation
 
 For contributors and developers:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/unitapi.git
+git clone https://github.com/yourUnitApi/python.git
 cd unitapi
 
 # Create virtual environment
@@ -334,6 +351,19 @@ pip install --upgrade unitapi[mqtt]
 ```bash
 pip uninstall unitapi
 ```
+
+## Remote Speaker Agent Installation
+
+For installing the Remote Speaker Agent on a remote machine, see the [Remote Speaker Agent documentation](remote_speaker_agent.md).
+
+### Quick Remote Installation
+
+```bash
+# Install on a remote machine via SSH
+scripts/install_remote_speaker_agent_via_ssh.sh remote-host [remote-user]
+
+# Example:
+scripts/install_remote_speaker_agent_via_ssh.sh 192.168.1.100 pi
 
 # UnitAPI Usage Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/usage.md)
 
@@ -391,24 +421,65 @@ print("Sensor Devices:", sensor_devices)
 
 ## Device Types
 
-### Sensor Devices
+### Camera Devices
 
 ```python
-from unitapi.devices.base import SensorDevice
+from unitapi.devices.camera import CameraDevice
+import asyncio
 
-class TemperatureSensor(SensorDevice):
-    async def read_sensor(self, sensor_type='temperature'):
-        # Custom sensor reading logic
-        return {
-            'temperature': 22.5,
-            'unit': '°C'
-        }
+# Create a camera device
+camera = CameraDevice(
+    device_id='camera_01',
+    name='Main Camera',
+    metadata={
+        'resolution': '1080p',
+        'fps': 30,
+        'location': 'front_door'
+    }
+)
+
+# Connect to the camera
+await camera.connect()
+
+# Capture an image
+image_data = await camera.capture_image()
+print(f"Image captured: {image_data}")
+
+# Start a video stream
+stream_info = await camera.start_video_stream(duration=10)
+print(f"Stream started: {stream_info}")
+```
+
+### Microphone Devices
+
+```python
+from unitapi.devices.microphone import MicrophoneDevice
+import asyncio
+
+# Create a microphone device
+mic = MicrophoneDevice(
+    device_id='mic_01',
+    name='Desktop Microphone',
+    metadata={
+        'sample_rate': 44100,
+        'channels': 2,
+        'location': 'office'
+    }
+)
+
+# Connect to the microphone
+await mic.connect()
+
+# Record audio
+audio_data = await mic.record_audio(duration=5, sample_rate=44100)
+print(f"Audio recorded: {audio_data}")
 ```
 
 ### GPIO Devices
 
 ```python
 from unitapi.devices.gpio import GPIODevice
+import asyncio
 
 # Create GPIO device
 gpio = GPIODevice(
@@ -417,9 +488,71 @@ gpio = GPIODevice(
     metadata={'total_pins': 40}
 )
 
+# Connect to the GPIO device
+await gpio.connect()
+
 # Set pin mode and control
 await gpio.set_pin_mode(18, 'output')
 await gpio.digital_write(18, True)
+
+# Read from a pin
+await gpio.set_pin_mode(17, 'input')
+pin_value = await gpio.digital_read(17)
+print(f"Pin 17 value: {pin_value}")
+
+# PWM control
+await gpio.set_pin_mode(12, 'output')
+await gpio.pwm_write(12, 0.5)  # 50% duty cycle
+```
+
+## Device Discovery
+
+UnitAPI provides a comprehensive device discovery mechanism that can detect devices on the local network and on the local machine.
+
+```python
+from examples.device_discovery import DeviceDiscoveryService
+import asyncio
+
+# Create a discovery service
+discovery = DeviceDiscoveryService(
+    server_host='0.0.0.0',
+    server_port=7890,
+    discovery_port=7891,
+    debug=True
+)
+
+# Discover devices
+devices = await discovery.discover_devices()
+print(f"Discovered {len(devices)} devices")
+
+# Start the discovery service
+await discovery.start()
+```
+
+## Remote Speaker Agent
+
+UnitAPI includes a Remote Speaker Agent that allows you to control speakers on a remote machine. See the [Remote Speaker Agent documentation](remote_speaker_agent.md) for details.
+
+```python
+# Connect to a remote speaker agent
+from unitapi.core.client import UnitAPIClient
+import asyncio
+
+# Create a client
+client = UnitAPIClient(server_host='remote-host', server_port=7890)
+
+# List available speakers
+speakers = await client.list_devices(device_type='speaker')
+print("Available Speakers:", speakers)
+
+# Play audio on a specific speaker
+await client.execute_command(
+    device_id='speaker_01',
+    command='play_audio',
+    params={
+        'file': 'path/to/audio.wav'
+    }
+)
 ```
 
 ## Authentication and Security
@@ -443,23 +576,11 @@ token = await auth_manager.authenticate('admin', 'secure_password')
 
 ## Protocol Support
 
-### MQTT Protocol
-
-```python
-from unitapi.protocols.mqtt import MQTTProtocol
-
-# Create MQTT protocol handler
-mqtt_client = MQTTProtocol(broker='localhost', port=1883)
-
-# Connect and publish
-await mqtt_client.connect()
-await mqtt_client.publish('unitapi/devices/temperature', '22.5')
-```
-
 ### WebSocket Protocol
 
 ```python
 from unitapi.protocols.websocket import WebSocketProtocol
+import asyncio
 
 # Create WebSocket protocol handler
 ws_client = WebSocketProtocol(host='localhost', port=8765)
@@ -470,34 +591,53 @@ await ws_client.send('device_command', {
     'device_id': 'sensor_01',
     'command': 'read_temperature'
 })
+
+# Add a message handler
+async def handle_temperature_data(data):
+    print(f"Received temperature: {data}")
+
+ws_client.add_message_handler('temperature_data', handle_temperature_data)
+
+# Disconnect when done
+await ws_client.disconnect()
 ```
 
-## Access Control
+### MQTT Protocol
 
 ```python
-from unitapi.security.access_control import AccessControlManager
+from unitapi.protocols.mqtt import MQTTProtocol
+import asyncio
 
-# Create access control manager
-acl_manager = AccessControlManager()
+# Create MQTT protocol handler
+mqtt_client = MQTTProtocol(broker='localhost', port=1883)
 
-# Define a dynamic access rule
-def temperature_limit_rule(role, resource, action, context):
-    if resource == 'temperature_sensor' and action == 'write':
-        # Prevent temperature changes beyond safe limits
-        temp = context.get('temperature', 0)
-        return 18 <= temp <= 30
-    return True
+# Connect and publish
+await mqtt_client.connect()
+await mqtt_client.publish('unitapi/devices/temperature', '22.5')
 
-# Add dynamic rule
-acl_manager.add_dynamic_rule(temperature_limit_rule)
+# Subscribe to a topic
+await mqtt_client.subscribe('unitapi/devices/+/status')
 
-# Check access
-is_allowed = acl_manager.check_access(
-    role='operator', 
-    resource='temperature_sensor', 
-    action='write',
-    context={'temperature': 22}
-)
+# Add a message handler
+def handle_status_message(topic, payload):
+    print(f"Received status on {topic}: {payload}")
+
+mqtt_client.add_message_handler('unitapi/devices/+/status', handle_status_message)
+```
+
+## Docker Support
+
+UnitAPI includes Docker examples that demonstrate how to containerize UnitAPI applications. See the [Docker example README](../examples/docker/README.md) for details.
+
+```bash
+# Navigate to the docker example directory
+cd examples/docker
+
+# Start the containers
+docker-compose up -d
+
+# Access the client container
+docker exec -it unitapi-speaker-client bash
 ```
 
 ## Error Handling
@@ -519,6 +659,7 @@ except Exception as e:
 3. Use authentication and access control
 4. Keep sensitive information secure
 5. Monitor device states and connections
+6. Use device discovery for automatic setup
 
 ## Logging
 
@@ -539,6 +680,265 @@ You can easily extend UnitAPI by:
 - Implementing new protocol handlers
 - Adding dynamic access rules
 - Integrating with existing systems
+
+# UnitAPI Remote Speaker Agent [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/remote_speaker_agent.md)
+
+The UnitAPI Remote Speaker Agent allows you to manage and control speakers on a remote PC via SSH. This document explains how to install, configure, and use this feature.
+
+## Overview
+
+The Remote Speaker Agent is a service that runs on a remote machine and provides access to all speakers on that machine through the UnitAPI protocol. This allows you to:
+
+- Discover all speakers on the remote machine
+- Play audio on specific speakers
+- Test speakers with test tones
+- Stream audio from one machine to speakers on another
+
+## Installation
+
+There are two ways to install the Remote Speaker Agent:
+
+### 1. Direct Installation on the Remote Machine
+
+If you have direct access to the remote machine, you can install the agent directly:
+
+```bash
+# Log in to the remote machine
+ssh user@remote-host
+
+# Clone the UnitAPI repository (if not already done)
+git clone https://github.com/UnitApi/python.git
+cd UnitApi/python
+
+# Run the installation script
+sudo scripts/install_remote_speaker_agent.sh
+```
+
+### 2. Remote Installation via SSH
+
+If you only have SSH access to the remote machine, you can install the agent remotely from your local machine:
+
+```bash
+# Clone the UnitAPI repository (if not already done)
+git clone https://github.com/UnitApi/python.git
+cd UnitApi/python
+
+# Run the remote installation script
+scripts/install_remote_speaker_agent_via_ssh.sh remote-host [remote-user]
+
+# Example:
+scripts/install_remote_speaker_agent_via_ssh.sh 192.168.1.100 pi
+```
+
+The remote installation script will:
+1. Connect to the remote machine via SSH
+2. Copy the installation script to the remote machine
+3. Execute the installation script on the remote machine
+4. Create a local client script for testing the remote speakers
+
+## Managing the Remote Speaker Agent
+
+After installation, you can manage the Remote Speaker Agent on the remote machine using the following commands:
+
+```bash
+# List all available speakers
+ssh user@remote-host 'sudo unitapi-speaker --list'
+
+# Test all speakers
+ssh user@remote-host 'sudo unitapi-speaker --test'
+
+# Check the service status
+ssh user@remote-host 'sudo unitapi-speaker --status'
+
+# Start the service
+ssh user@remote-host 'sudo unitapi-speaker --start'
+
+# Stop the service
+ssh user@remote-host 'sudo unitapi-speaker --stop'
+
+# Enable the service to start at boot
+ssh user@remote-host 'sudo unitapi-speaker --enable'
+
+# Disable the service from starting at boot
+ssh user@remote-host 'sudo unitapi-speaker --disable'
+```
+
+## Connecting to the Remote Speaker Agent
+
+### Using the Python Client
+
+To connect to the Remote Speaker Agent from another machine, you can use the UnitAPI client:
+
+```python
+from unitapi.core.client import UnitAPIClient
+import asyncio
+
+async def main():
+    # Create a client
+    client = UnitAPIClient(server_host='remote-host', server_port=7890)
+    
+    # List available speakers
+    devices = await client.list_devices(device_type='speaker')
+    print("Available Speakers:", devices)
+    
+    # Play audio on a specific speaker
+    await client.execute_command(
+        device_id='speaker_01',
+        command='play_audio',
+        params={
+            'file': 'path/to/audio.wav'
+        }
+    )
+
+# Run the async function
+asyncio.run(main())
+```
+
+### Using the Command-Line Client
+
+If you used the remote installation script, a client script was created for you:
+
+```bash
+# List all available speakers
+python remote_speaker_client.py --host remote-host --list
+
+# Test all speakers
+python remote_speaker_client.py --host remote-host --test
+
+# Test a specific speaker
+python remote_speaker_client.py --host remote-host --device speaker_id
+
+# Play an audio file on a specific speaker
+python remote_speaker_client.py --host remote-host --device speaker_id --file path/to/audio.wav
+
+# Play a test tone with custom frequency and duration
+python remote_speaker_client.py --host remote-host --device speaker_id --frequency 880 --duration 2.0
+```
+
+## Docker Example
+
+UnitAPI includes a Docker Compose example that demonstrates how to set up a virtual speaker server on one machine and a client on another machine using Docker. This example simulates the process of installing the UnitAPI speaker agent on a remote PC and controlling its speakers.
+
+To use this example:
+
+```bash
+# Navigate to the docker example directory
+cd examples/docker
+
+# Start the containers
+docker-compose up -d
+
+# View the logs
+docker-compose logs -f
+
+# Access the client container and test the speakers
+docker exec -it unitapi-speaker-client bash
+python /opt/unitapi/client.py --host 172.28.1.2 --list
+python /opt/unitapi/client.py --host 172.28.1.2 --test
+```
+
+For more details, see the [Docker example README](../examples/docker/README.md).
+
+## Technical Details
+
+The Remote Speaker Agent consists of the following components:
+
+1. **UnitAPI Server**: Handles device registration and communication
+2. **WebSocket Server**: Provides a WebSocket interface for real-time communication
+3. **Speaker Detection**: Automatically detects all speakers on the system
+4. **Speaker Registry**: Maintains a registry of all available speakers
+5. **Configuration**: Stores speaker configuration in `/etc/unitapi/speaker_agent.json`
+6. **Systemd Service**: Runs the agent as a system service (`unitapi-speaker-agent`)
+
+The agent is installed in `/opt/unitapi` and runs in a Python virtual environment to avoid conflicts with system packages.
+
+## Troubleshooting
+
+If you encounter issues with the Remote Speaker Agent, check the following:
+
+1. **Service Status**: Check if the service is running
+   ```bash
+   ssh user@remote-host 'sudo systemctl status unitapi-speaker-agent'
+   ```
+
+2. **Logs**: Check the service logs
+   ```bash
+   ssh user@remote-host 'sudo journalctl -u unitapi-speaker-agent'
+   ```
+
+3. **Configuration**: Check the configuration file
+   ```bash
+   ssh user@remote-host 'sudo cat /etc/unitapi/speaker_agent.json'
+   ```
+
+4. **Network**: Make sure the remote machine is reachable and the required ports are open
+   ```bash
+   # Test connectivity
+   ping remote-host
+   
+   # Test if the UnitAPI port is open
+   nc -zv remote-host 7890
+   
+   # Test if the WebSocket port is open
+   nc -zv remote-host 8765
+   ```
+
+5. **Dependencies**: Make sure all required dependencies are installed
+   ```bash
+   ssh user@remote-host 'sudo /opt/unitapi/venv/bin/pip list | grep -E "pyaudio|websockets|numpy|sounddevice|soundfile"'
+   ```
+
+## Advanced Usage
+
+### Custom Configuration
+
+You can customize the Remote Speaker Agent by editing the configuration file:
+
+```bash
+ssh user@remote-host 'sudo nano /etc/unitapi/speaker_agent.json'
+```
+
+Configuration options:
+- `auto_register_speakers`: Whether to automatically register all detected speakers (default: `true`)
+- `speakers`: List of manually configured speakers (used when `auto_register_speakers` is `false`)
+
+### Multiple Remote Machines
+
+You can install the Remote Speaker Agent on multiple machines and control them all from a single client:
+
+```bash
+# Install on multiple machines
+scripts/install_remote_speaker_agent_via_ssh.sh machine1 user1
+scripts/install_remote_speaker_agent_via_ssh.sh machine2 user2
+
+# Connect to each machine
+python remote_speaker_client.py --host machine1 --list
+python remote_speaker_client.py --host machine2 --list
+
+# Play audio on specific speakers on different machines
+python remote_speaker_client.py --host machine1 --device speaker_id1 --file audio1.wav
+python remote_speaker_client.py --host machine2 --device speaker_id2 --file audio2.wav
+```
+
+### Integration with Other UnitAPI Devices
+
+The Remote Speaker Agent can be integrated with other UnitAPI devices, such as microphones, cameras, and sensors, to create a complete IoT system:
+
+```python
+from unitapi.core.client import UnitAPIClient
+
+# Connect to multiple UnitAPI servers
+speaker_client = UnitAPIClient(server_host="speaker-host", server_port=7890)
+microphone_client = UnitAPIClient(server_host="microphone-host", server_port=7890)
+camera_client = UnitAPIClient(server_host="camera-host", server_port=7890)
+
+# List devices on each server
+speakers = await speaker_client.list_devices(device_type="speaker")
+microphones = await microphone_client.list_devices(device_type="microphone")
+cameras = await camera_client.list_devices(device_type="camera")
+
+# Create a complete IoT system
+# ...
 
 ---
 + Modular Documentation made possible by the [FlatEdit](http://www.flatedit.com) project.
