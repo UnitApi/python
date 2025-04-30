@@ -36,7 +36,7 @@ class UnitAPIClient:
         """
         # In a real implementation, this would use websockets or HTTP
         # For now, we'll just return a mock response for testing
-        
+
         # If the command is list_devices, return a mock list of devices
         if command.get("action") == "list_devices":
             return {
@@ -50,12 +50,12 @@ class UnitAPIClient:
                             "speaker_type": "raspberry_pi",
                             "virtual": True,
                             "sample_rate": 44100,
-                            "channels": 2
-                        }
+                            "channels": 2,
+                        },
                     }
-                ]
+                ],
             }
-        
+
         return {"status": "success", "data": {"message": "Command processed"}}
 
     async def list_devices(self, device_type=None):

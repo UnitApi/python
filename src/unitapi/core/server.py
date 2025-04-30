@@ -61,8 +61,10 @@ class UnitAPIServer:
             for device_id, device_info in self._devices.items()
             if device_info["type"] == device_type
         }
-        
-    def register_command_handler(self, device_id: str, command: str, handler: Callable) -> None:
+
+    def register_command_handler(
+        self, device_id: str, command: str, handler: Callable
+    ) -> None:
         """
         Register a command handler for a specific device.
 
@@ -76,12 +78,14 @@ class UnitAPIServer:
         """
         if device_id not in self._devices:
             raise ValueError(f"Device with ID '{device_id}' is not registered")
-            
+
         if device_id not in self._command_handlers:
             self._command_handlers[device_id] = {}
-            
+
         self._command_handlers[device_id][command] = handler
-        self.logger.debug(f"Registered command handler for '{command}' on device '{device_id}'")
+        self.logger.debug(
+            f"Registered command handler for '{command}' on device '{device_id}'"
+        )
 
     async def start(self) -> None:
         """
