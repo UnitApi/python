@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2025-04-30
+
+### Added
+- Changes in examples/camera_capture.py
+- Changes in examples/camera_frame_capture.py
+- Changes in examples/microphone_audio_input.py
+- Changes in examples/microphone_recording.py
+- Changes in examples/remote_camera_capture.py
+- Changes in examples/remote_camera_frame_capture.py
+- Changes in examples/speaker_audio_playback.py
+- Changes in examples/speaker_playback.py
+- Changes in examples/take_screenshot.py
+
 ## [0.1.2] - 2025-04-30
 
 ### Added

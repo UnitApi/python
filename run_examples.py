@@ -7,8 +7,9 @@ import yaml
 from pathlib import Path
 
 def clean_directories():
-    """Remove all files from correct and error directories."""
+    """Remove all files from correct and error directories and temporary wrapper files."""
     import shutil
+    # Clean output directories
     for directory in ['correct', 'error']:
         if os.path.exists(directory):
             shutil.rmtree(directory)
@@ -186,8 +187,8 @@ def main():
         if not install_unitapi():
             print("Failed to install unitapi package. Examples may not work correctly.")
     
-    # Find all Python files in examples/basic by default
-    python_files = find_python_files('examples/basic')
+    # Find all Python files in examples directory
+    python_files = find_python_files('examples')
     
     # Statistics
     total = len(python_files)

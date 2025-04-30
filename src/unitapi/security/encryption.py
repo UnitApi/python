@@ -23,9 +23,12 @@ class EncryptionManager:
         # Check cryptography library availability
         try:
             from cryptography.fernet import Fernet
+
             self._fernet_available = True
         except ImportError:
-            self.logger.warning("Cryptography library not installed. Fallback to basic encryption.")
+            self.logger.warning(
+                "Cryptography library not installed. Fallback to basic encryption."
+            )
             self._fernet_available = False
 
         # Generate or use provided secret key
@@ -39,9 +42,11 @@ class EncryptionManager:
         """
         try:
             from cryptography.fernet import Fernet
+
             return Fernet.generate_key().decode()
         except ImportError:
             import secrets
+
             return base64.urlsafe_b64encode(secrets.token_bytes(32)).decode()
 
     def encrypt(self, data: Union[str, bytes]) -> str:
@@ -58,6 +63,7 @@ class EncryptionManager:
         if self._fernet_available:
             try:
                 from cryptography.fernet import Fernet
+
                 f = Fernet(self._secret_key.encode())
                 encrypted = f.encrypt(data)
                 return encrypted.decode()
@@ -81,6 +87,7 @@ class EncryptionManager:
         if self._fernet_available:
             try:
                 from cryptography.fernet import Fernet
+
                 f = Fernet(self._secret_key.encode())
                 decrypted = f.decrypt(encrypted_data)
                 return decrypted.decode()
@@ -133,9 +140,10 @@ class EncryptionManager:
         :return: Random string
         """
         import secrets
+
         return secrets.token_urlsafe(length)
 
-    def hash_data(self, data: Union[str, bytes], algorithm: str = 'sha256') -> str:
+    def hash_data(self, data: Union[str, bytes], algorithm: str = "sha256") -> str:
         """
         Create a secure hash of the input data.
 

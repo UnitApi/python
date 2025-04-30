@@ -13,10 +13,10 @@ class MQTTProtocol:
     """
 
     def __init__(
-            self,
-            broker: str = 'localhost',
-            port: int = 1883,
-            client_id: Optional[str] = None
+        self,
+        broker: str = "localhost",
+        port: int = 1883,
+        client_id: Optional[str] = None,
     ):
         """
         Initialize MQTT protocol handler.
@@ -27,7 +27,7 @@ class MQTTProtocol:
         """
         self.broker = broker
         self.port = port
-        self.client_id = client_id or f'unitapi_client_{id(self)}'
+        self.client_id = client_id or f"unitapi_client_{id(self)}"
 
         self.logger = logging.getLogger(self.__class__.__name__)
         self._client = None
@@ -55,7 +55,9 @@ class MQTTProtocol:
             return True
 
         except ImportError:
-            self.logger.error("paho-mqtt not installed. Install with: pip install paho-mqtt")
+            self.logger.error(
+                "paho-mqtt not installed. Install with: pip install paho-mqtt"
+            )
             return False
 
         except Exception as e:
@@ -167,7 +169,7 @@ async def main():
     Demonstrate MQTT protocol usage.
     """
     # Create MQTT protocol handler
-    mqtt_protocol = MQTTProtocol(broker='localhost', port=1883)
+    mqtt_protocol = MQTTProtocol(broker="localhost", port=1883)
 
     # Define message handler
     def on_message(topic: str, message: str):
@@ -178,10 +180,10 @@ async def main():
         await mqtt_protocol.connect()
 
         # Subscribe to a topic
-        await mqtt_protocol.subscribe('unitapi/devices/#', on_message)
+        await mqtt_protocol.subscribe("unitapi/devices/#", on_message)
 
         # Publish a message
-        await mqtt_protocol.publish('unitapi/devices/temperature', '22.5')
+        await mqtt_protocol.publish("unitapi/devices/temperature", "22.5")
 
         # Keep connection open briefly
         await asyncio.sleep(5)

@@ -26,6 +26,7 @@ class AuthenticationManager:
         # Use Python-jose for token generation if available
         try:
             import jose
+
             self._jwt_available = True
         except ImportError:
             self.logger.warning("python-jose not installed. Token features limited.")
@@ -41,13 +42,11 @@ class AuthenticationManager:
         :return: Generated secret key
         """
         import secrets
+
         return secrets.token_hex(32)
 
     async def register_user(
-            self,
-            username: str,
-            password: str,
-            roles: Optional[list] = None
+        self, username: str, password: str, roles: Optional[list] = None
     ) -> bool:
         """
         Register a new user.
@@ -65,19 +64,15 @@ class AuthenticationManager:
             return False
 
         self._users[username] = {
-            'password': hashed_password,
-            'roles': roles or ['user'],
-            'created_at': datetime.now()
+            "password": hashed_password,
+            "roles": roles or ["user"],
+            "created_at": datetime.now(),
         }
 
         self.logger.info(f"User {username} registered successfully")
         return True
 
-    async def authenticate(
-            self,
-            username: str,
-            password: str
-    ) -> Optional[str]:
+    async def authenticate(self, username: str, password: str) -> Optional[str]:
         """
         Authenticate user and generate token.
 
@@ -91,12 +86,12 @@ class AuthenticationManager:
 
         # Verify password
         user = self._users[username]
-        if not await self._verify_password(password, user['password']):
+        if not await self._verify_password(password, user["password"]):
             self.logger.warning(f"Invalid credentials for {username}")
             return None
 
         # Generate token
-        token = await self._generate_token(username, user['roles'])
+        token = await self._generate_token(username, user["roles"])
         return token
 
     async def validate_token(self, token: str) -> bool:
@@ -114,14 +109,10 @@ class AuthenticationManager:
             from jose import jwt
 
             # Decode and verify token
-            payload = jwt.decode(
-                token,
-                self._secret_key,
-                algorithms=['HS256']
-            )
+            payload = jwt.decode(token, self._secret_key, algorithms=["HS256"])
 
             # Check token expiration
-            expiration = datetime.fromtimestamp(payload['exp'])
+            expiration = datetime.fromtimestamp(payload["exp"])
             if datetime.now() > expiration:
                 self.logger.warning("Token expired")
                 return False
@@ -151,6 +142,7 @@ class AuthenticationManager:
         except ImportError:
             self.logger.warning("bcrypt not installed. Using insecure hashing.")
             import hashlib
+
             return hashlib.sha256(password.encode()).hexdigest()
 
     async def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
@@ -163,21 +155,19 @@ class AuthenticationManager:
         """
         try:
             import bcrypt
-            return bcrypt.checkpw(
-                plain_password.encode(),
-                hashed_password.encode()
-            )
+
+            return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
 
         except ImportError:
             # Fallback to insecure comparison
             import hashlib
-            return hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
+
+            return (
+                hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password
+            )
 
     async def _generate_token(
-            self,
-            username: str,
-            roles: list,
-            expiration: int = 3600
+        self, username: str, roles: list, expiration: int = 3600
     ) -> Optional[str]:
         """
         Generate JWT token.
@@ -196,19 +186,19 @@ class AuthenticationManager:
 
             # Create token payload
             payload = {
-                'sub': username,
-                'roles': roles,
-                'exp': datetime.now() + timedelta(seconds=expiration)
+                "sub": username,
+                "roles": roles,
+                "exp": datetime.now() + timedelta(seconds=expiration),
             }
 
             # Generate token
-            token = jwt.encode(payload, self._secret_key, algorithm='HS256')
+            token = jwt.encode(payload, self._secret_key, algorithm="HS256")
 
             # Store token
             self._active_tokens[token] = {
-                'username': username,
-                'issued_at': datetime.now(),
-                'expires_at': datetime.now() + timedelta(seconds=expiration)
+                "username": username,
+                "issued_at": datetime.now(),
+                "expires_at": datetime.now() + timedelta(seconds=expiration),
             }
 
             return token
@@ -255,19 +245,15 @@ async def main():
 
     # Register users
     await auth_manager.register_user(
-        username='admin',
-        password='secure_password',
-        roles=['admin', 'user']
+        username="admin", password="secure_password", roles=["admin", "user"]
     )
 
     await auth_manager.register_user(
-        username='user',
-        password='user_password',
-        roles=['user']
+        username="user", password="user_password", roles=["user"]
     )
 
     # Authenticate and get token
-    token = await auth_manager.authenticate('admin', 'secure_password')
+    token = await auth_manager.authenticate("admin", "secure_password")
 
     if token:
         print("Authentication successful!")
@@ -278,14 +264,14 @@ async def main():
         print("Token valid:", is_valid)
 
         # Get user info
-        user_info = auth_manager.get_user_info('admin')
+        user_info = auth_manager.get_user_info("admin")
         print("User Info:", user_info)
 
         # Revoke token
         await auth_manager.revoke_token(token)
 
         # Try invalid authentication
-    invalid_token = await auth_manager.authenticate('admin', 'wrong_password')
+    invalid_token = await auth_manager.authenticate("admin", "wrong_password")
     print("Invalid authentication:", invalid_token)
 
 

@@ -16,7 +16,8 @@ uvicorn>=0.27.0
 upnpclient>=1.0.3
 zeroconf>=0.38.1
 wsdiscovery>=2.0.0
-onvif-zeep>=0.3.3
+#onvif-zeep>=0.3.3
+onvif-zeep
 
 # Media processing
 opencv-python>=4.6.0
@@ -34,8 +35,8 @@ python-xlib>=0.33
 paho-mqtt>=1.6.1
 
 # Remote desktop and VNC
-python-vnc>=1.0.0
-pyrdp>=1.1.0
+#python-vnc>=1.0.0
+#pyrdp>=1.1.0
 
 # Speech recognition and AI
 openai-whisper>=20240930

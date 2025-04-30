@@ -1,7 +1,16 @@
 import asyncio
 import base64
 import logging
+import numpy as np
 from unitapi.core.client import UnitAPIClient
+
+# Check if sounddevice is available
+try:
+    import sounddevice as sd
+    SOUNDDEVICE_AVAILABLE = True
+except ImportError:
+    print("Warning: sounddevice module not available, using simulated audio")
+    SOUNDDEVICE_AVAILABLE = False
 
 
 class RemoteSpeakerClient:
@@ -42,10 +51,6 @@ class RemoteSpeakerClient:
 
 
 # Przykładowe użycie
-import sounddevice as sd
-import numpy as np
-
-
 async def record_and_play():
     """
     Nagraj dźwięk lokalnie i wyślij na zdalny głośnik.
@@ -55,23 +60,30 @@ async def record_and_play():
     sample_rate = 44100
     channels = 2
 
-    print("Nagraj dźwięk (5 sekund)")
+    if SOUNDDEVICE_AVAILABLE:
+        print("Nagraj dźwięk (5 sekund)")
 
-    # Nagraj dźwięk
-    recording = sd.rec(
-        int(duration * sample_rate),
-        samplerate=sample_rate,
-        channels=channels,
-        dtype='float32'
-    )
-    sd.wait()  # Czekaj na zakończenie nagrywania
+        # Nagraj dźwięk
+        recording = sd.rec(
+            int(duration * sample_rate),
+            samplerate=sample_rate,
+            channels=channels,
+            dtype='float32'
+        )
+        sd.wait()  # Czekaj na zakończenie nagrywania
 
-    # Konwersja do bajtów
-    audio_bytes = recording.tobytes()
+        # Konwersja do bajtów
+        audio_bytes = recording.tobytes()
+    else:
+        print("Używanie symulowanych danych audio")
+        # Generowanie symulowanych danych audio (szum)
+        simulated_samples = int(duration * sample_rate)
+        simulated_audio = np.random.uniform(-0.1, 0.1, (simulated_samples, channels)).astype('float32')
+        audio_bytes = simulated_audio.tobytes()
 
     # Klient zdalnego głośnika
     client = RemoteSpeakerClient(
-        server_host='192.168.1.100'  # ZMIEŃ NA ADRES IP SERWERA
+        server_host='localhost'  # Using localhost for testing
     )
 
     # Lista głośników

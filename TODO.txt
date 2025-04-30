@@ -1,376 +1,74 @@
-execute tasks from TODO.md and check if they are done, set [x] if it is DONE
-sprawdz, ktore zadania zostaly wykonane i wykonaj kolejne zadania do wykonania:
-zaktualizuj requirements.txt
-zaktualizuj requirements-dev.txt
+Przeprowadzenie całościowego audytu projektu UnitAPI, obejmującego:
+1. Weryfikację struktury projektu
+2. Sprawdzenie kompletności plików
+3. Uruchomienie testów jednostkowych
+4. Weryfikację przykładów w folderze `examples`
+5. Przegląd dokumentacji
+6. Weryfikację zależności
+7. Próbę instalacji pakietu
 
-zaktualizuj pliki w fodlerze docs/ dodaj nowe, opisz cała funkcjonalnosć i zaktualizuj folder examples/ gdzie powinny znajdować się przykłady, w kazdym fodlerze w examples/*/ dodaj przykład w python z README.md i innymi plikami
+## Szczegółowy Plan Weryfikacji
 
+### 1. Struktura Projektu
+- [ ] Sprawdź kompletność katalogów
+- [ ] Potwierdź obecność wszystkich wymaganych plików
+- [ ] Zweryfikuj nazewnictwo i rozmieszczenie plików
 
+### 2. Weryfikacja Plików Konfiguracyjnych
+- [ ] `pyproject.toml`: Poprawność konfiguracji budowania
+- [ ] `setup.py`: Kompletność metadanych
+- [ ] `requirements.txt`: Aktualne zależności
+- [ ] `requirements-dev.txt`: Narzędzia deweloperskie
 
-stworz pliki przykladow w python  dla folderu examples/devices z przykładami z README.md i uruchom, popraw błedy
-stworz pliki przykladow w python  dla folderu examples/webserver z przykładami z README.md i uruchom, popraw błedy
-stworz pliki przykladow w python  dla folderu examples/speech z przykładami z README.md i uruchom, popraw błedy
+### 3. Testy Jednostkowe
+- [ ] Zainstaluj zależności testowe
+- [ ] Uruchom pytest dla wszystkich testów
+- [ ] Raportuj pokrycie kodu
+- [ ] Zidentyfikuj potencjalne błędy lub braki
 
-utworz skrypt do uruchamiania wszystkich przykladow z folderu examples/ ktory bedzie tworzyl 2 pliki: logi poprawnie wykonanymi w correct/[nazwa pliku py z examples] i niepoprawnie error/[nazwa pliku py z examples] z bledami uruchamiania
+### 4. Przykłady (`examples/`)
+- [ ] Sprawdź kompilację każdego przykładu
+- [ ] Uruchom przykłady
+- [ ] Zweryfikuj obsługę błędów
+- [ ] Potwierdź zgodność z dokumentacją
 
-- sprawdz kolejno bledy w plikach w folderze ./error z uruchomienia skryptow z examples/ dopasuj skyrpty do aktualnego stanu biblioteki unitapi,
-- jesli pojawiaja sie dane typu string, ktore moglyby byc dana typu constant opobierane bezposrednio z biblitoeki jak w src/unitapi/constants to utworz je w biblitoeece i uzyj w przykladzie, ale nie jako formę OutputType.DISPLAY.name.lower(), tylko krotszą jak np. OUTPUT_DISPLAY
-- Dodatkowo uprasczając kod w przykladach z folderu examples/ i sprawdzajac czy nie ma duplikatów w różnych przykładach oraz w bibliotece unitapi, staraj się refaktoryzowac kod w bibliotece unitapi zmniejszajac ilość kodu poprzez modularyzacje i reuzycie
+### 5. Dokumentacja
+- [ ] Przejrzyj `docs/installation.md`
+- [ ] Sprawdź `docs/usage.md`
+- [ ] Potwierdź aktualność i czytelność
+- [ ] Zweryfikuj przykłady kodu
 
-- check errors after running scripts in examples/
+### 6. Zależności
+- [ ] Sprawdź kompatybilność wersji bibliotek
+- [ ] Zweryfikuj minimalne wymagania systemowe
+- [ ] Potwierdź instalację opcjonalnych modułów
 
-- check errors in files in ./error directory from running scripts in examples/
-- match scripts to current state of unitapi library
-- refactor string constants to use library constants, but not such: OutputType.DISPLAY.name.lower() but shorter: OUTPUT_DISPLAY
-- simplify code in examples by removing duplicates and modularizing in library
+### 7. Instalacja Pakietu
+- [ ] Stwórz czyste środowisko wirtualne
+- [ ] Zainstaluj pakiet w trybie edytowalnym
+- [ ] Sprawdź import modułów
 
+## Raportowanie
 
+Dla każdego znalezionego problemu:
+- Określ kategorię (Krytyczny/Wysoki/Średni/Niski)
+- Podaj szczegółowy opis
+- Zaproponuj rozwiązanie
+- Wskaż plik/lokalizację
 
-
-- Start by executing run_examples.py to validate current functionality
-- Check errors in files in ./error directory from running scripts in examples/ to identify recurring issues and their root causes
-- Match scripts to the current state of the unitapi library, ensuring API compatibility and updating function parameters as needed
-- Refactor string constants to use library constants, but prefer shorter forms like OUTPUT_DISPLAY instead of verbose expressions like OutputType.DISPLAY.name.lower()
-- Create a flexible constants system that allows users to override default values through environment variables (.env file)
-- Implement a ConfigurableEnum class that checks for environment variables in the format unitapi_{ENUM_CLASS}_{ENUM_ITEM}
-- Provide convenient constant shortcuts (e.g., DEVICE_REMOTE_DESKTOP) that use the configurable enum system
-- Simplify code in examples by removing duplicates and modularizing in library to improve readability and maintainability
-- Use enums instead of string constants for better type safety, logical grouping, and code organization
-- Ensure consistent use of enum values (preferably .value over .name) in configuration dictionaries
-- Maintain compatibility with the hierarchical configuration system described in README.md
-- Extend the configuration system to respect the priority order: env vars → project config → user config → global config → defaults
-- Provide clear documentation for any significant changes or design decisions with examples of how to use the new configurable constants system
-
-The goal is to improve code quality, reduce redundancy, make the project more maintainable, and provide flexibility for users to customize constants through environment variables while maintaining the benefits of enumeration types.
-
-
-- uzyj integracji Model Context Protocol (MCP) dla LLM, plugin cline bedzie w stanie utworzyc sobie sam to repozytorium i sklonowac i zaktuaziowac na github ? czy potrzebna jest integracja z pypi przez Model Context Protocol (MCP) ?
-
-
-
-python examples/basic/device_discovery.py
-
-
-
-
-Oto systematyczny plan refaktoryzacji z listą szczegółowych promptów dla każdego modułu:
-
-### 1. Inicjalizacja Projektu Modularnego
-Zadanie: Przygotowanie struktury projektu unitapi-modular
-
-1. Struktura katalogów:
-```
-unitapi-modular/
-├── pyproject.toml         # Główna konfiguracja projektu
-├── setup.py               # Konfiguracja instalacji
-├── README.md              # Dokumentacja projektu
-├── unitapi-core/           # Rdzeń systemu
-├── unitapi-devices/        # Zarządzanie urządzeniami
-├── unitapi-streaming/      # Obsługa strumieni
-├── unitapi-processing/     # Przetwarzanie mediów
-├── unitapi-web/            # Interfejs webowy
-├── unitapi-cli/            # Interfejs wiersza poleceń
-└── unitapi-integration/    # Integracje zewnętrzne
-```
+## Dodatkowe Wskazówki
+- Używaj `pytest` do testów
+- Sprawdzaj typ Python 3.8+
+- Zwracaj uwagę na async/await
+- Weryfikuj obsługę błędów
+- Sprawdzaj type hinting
 
 
-3. Cele inicjalizacji:
-- Przygotowanie struktury projektu
-- Konfiguracja zależności między modułami
-- Zapewnienie możliwości rozwoju
-
-Wytyczne:
-- Użyj najnowszych praktyk setuptools
-- Zachowaj kompatybilność wsteczną
-- Przygotuj dokumentację
-```
+## Raport Końcowy
+Dostarcz podsumowanie:
+- Liczba znalezionych problemów
+- Ogólna ocena jakości projektu
+- Kluczowe rekomendacje
 
 
-### 3. Refaktoryzacja Urządzeń (unitapi-devices)
-```
-Zadanie: Migracja komponentów zarządzania urządzeniami
-
-Komponenty do migracji:
-- LocalDevicesManager
-- NetworkDevicesManager
-- Mechanizmy odkrywania urządzeń
-- Klasy protokołów
-
-Struktura katalogów:
-```
-unitapi-devices/
-├── pyproject.toml
-├── README.md
-└── unitapi_devices/
-    ├── __init__.py
-    ├── base/
-    │   ├── __init__.py
-    │   └── device.py
-    ├── local/
-    │   ├── __init__.py
-    │   └── manager.py
-    ├── network/
-    │   ├── __init__.py
-    │   └── manager.py
-    ├── discovery/
-    │   ├── __init__.py
-    │   ├── local.py
-    │   └── network.py
-    └── protocols/
-        ├── __init__.py
-        └── base.py
-```
-
-Kluczowe zadania:
-1. Abstrakcyjna klasa bazowa Device
-2. Mechanizmy odkrywania urządzeń
-3. Wsparcie dla różnych protokołów
-4. Zdarzeniowy model komunikacji
-
-Wytyczne:
-- Użyj enum do zarządzania stanami
-- Zaimplementuj interfejs protokołów
-- Wprowadź mechanizm pluginów dla odkrywania
-- Zachowaj istniejącą logikę z src/unitapi/device_managers/
-```
-
-### 4. Refaktoryzacja Strumieniowania (unitapi-streaming)
-```
-Zadanie: Migracja komponentów strumieniowania
-
-Komponenty do migracji:
-- Protokoły (RTSP, RTMP, WebRTC)
-- Menedżer strumieni
-- Klasy obsługi wyjść
-
-Struktura katalogów:
-```
-unitapi-streaming/
-├── pyproject.toml
-├── README.md
-└── unitapi_streaming/
-    ├── __init__.py
-    ├── base/
-    │   ├── __init__.py
-    │   └── stream.py
-    ├── protocols/
-    │   ├── __init__.py
-    │   ├── rtsp.py
-    │   ├── rtmp.py
-    │   └── webrtc.py
-    ├── manager/
-    │   ├── __init__.py
-    │   └── stream_manager.py
-    └── output/
-        ├── __init__.py
-        └── handlers.py
-```
-
-Kluczowe wymagania:
-1. Abstrakcyjny interfejs protokołów
-2. Zarządzanie cyklem życia strumieni
-3. Wsparcie dla wielu protokołów
-4. Wydajne przetwarzanie mediów
-
-Wytyczne:
-- Wprowadź bazową klasę Stream
-- Zaimplementuj fabrykę protokołów
-- Dodaj mechanizmy monitorowania stanu strumieni
-- Zachowaj implementacje z src/unitapi/streaming/
-```
-
-### 5. Refaktoryzacja Przetwarzania (unitapi-processing)
-```
-Zadanie: Migracja komponentów przetwarzania mediów
-
-Komponenty do migracji:
-- Filtry wideo
-- Filtry audio
-- Detekcja obiektów
-- Rozpoznawanie mowy
-- Executor potoków
-
-Struktura katalogów:
-```
-unitapi-processing/
-├── pyproject.toml
-├── README.md
-└── unitapi_processing/
-    ├── __init__.py
-    ├── base/
-    │   ├── __init__.py
-    │   └── pipeline.py
-    ├── video/
-    │   ├── __init__.py
-    │   ├── filters.py
-    │   └── detection.py
-    ├── audio/
-    │   ├── __init__.py
-    │   ├── filters.py
-    │   └── recognition.py
-    └── executor/
-        ├── __init__.py
-        └── pipeline_executor.py
-```
-
-Kluczowe wymagania:
-1. Potokowy model przetwarzania
-2. Wsparcie dla różnych typów mediów
-3. Rozszerzalność filtrów
-4. Wydajne przetwarzanie
-
-Wytyczne:
-- Wprowadź abstrakcyjną klasę Filter
-- Zaimplementuj builder dla potoków
-- Dodaj mechanizmy asynchronicznego przetwarzania
-- Zachowaj implementacje z src/unitapi/processing/
-```
-
-### 6. Refaktoryzacja Web (unitapi-web)
-```
-Zadanie: Migracja komponentów webowych
-
-Komponenty do migracji:
-- Serwer WWW
-- Endpointy API
-- Interfejs webowy
-- Obsługa WebSocket
-
-Struktura katalogów:
-```
-unitapi-web/
-├── pyproject.toml
-├── README.md
-└── unitapi_web/
-    ├── __init__.py
-    ├── server/
-    │   ├── __init__.py
-    │   └── main.py
-    ├── api/
-    │   ├── __init__.py
-    │   ├── devices.py
-    │   ├── streams.py
-    │   └── processing.py
-    ├── websocket/
-    │   ├── __init__.py
-    │   └── handler.py
-    └── interface/
-        ├── __init__.py
-        └── routes.py
-```
-
-Kluczowe wymagania:
-1. Obsługa RESTful API
-2. Zarządzanie WebSocket
-3. Routing interfejsu
-4. Bezpieczeństwo komunikacji
-
-Wytyczne:
-- Użyj FastAPI lub Flask
-- Zaimplementuj autoryzację
-- Dodaj obsługę CORS
-- Zachowaj implementacje z src/unitapi/web/
-```
-
-### 7. Refaktoryzacja CLI (unitapi-cli)
-```
-Zadanie: Migracja komponentów CLI
-
-Komponenty do migracji:
-- Komendy zarządzania
-- Interfejs interaktywny
-- Obsługa konfiguracji
-
-Struktura katalogów:
-```
-unitapi-cli/
-├── pyproject.toml
-├── README.md
-└── unitapi_cli/
-    ├── __init__.py
-    ├── main.py
-    ├── commands/
-    │   ├── __init__.py
-    │   ├── devices.py
-    │   ├── streams.py
-    │   └── processing.py
-    └── utils/
-        ├── __init__.py
-        └── output.py
-```
-
-Kluczowe wymagania:
-1. Intuicyjny interfejs
-2. Wsparcie dla wszystkich funkcji systemu
-3. Rozszerzalność komend
-4. Przyjazne formatowanie wyjścia
-
-Wytyczne:
-- Użyj Click lub Typer
-- Wprowadź bazową klasę dla komend
-- Zaimplementuj dynamiczne ładowanie komend
-- Zachowaj implementacje z src/unitapi/cli/
-```
-
-### 8. Refaktoryzacja Integracji (unitapi-integration)
-```
-Zadanie: Migracja komponentów integracji
-
-Komponenty do migracji:
-- Reguły automatyzacji
-- Wyzwalacze zdarzeń
-- Akcje
-- Integracje z systemami zewnętrznymi
-
-Struktura katalogów:
-```
-unitapi-integration/
-├── pyproject.toml
-├── README.md
-└── unitapi_integration/
-    ├── __init__.py
-    ├── rules/
-    │   ├── __init__.py
-    │   └── engine.py
-    ├── triggers/
-    │   ├── __init__.py
-    │   └── base.py
-    ├── actions/
-    │   ├── __init__.py
-    │   └── base.py
-    └── connectors/
-        ├── __init__.py
-        ├── mqtt.py
-        └── home_assistant.py
-```
-
-Kluczowe wymagania:
-1. Silnik reguł
-2. Mechanizmy wyzwalaczy
-3. Definicje akcji
-4. Integracje z systemami IoT
-
-Wytyczne:
-- Wprowadź abstrakcyjną klasę dla reguł
-- Zaimplementuj mechanizm oceny warunków
-- Dodaj wsparcie dla wielu źródeł zdarzeń
-- Zachowaj implementacje z src/unitapi/automation/
-```
-
-### Strategia Migracji
-
-1. **Kolejność Migracji**:
-- Rdzeń systemu (unitapi-core)
-- Moduł urządzeń (unitapi-devices)
-- Streaming (unitapi-streaming)
-- Przetwarzanie (unitapi-processing)
-- Web (unitapi-web)
-- CLI (unitapi-cli)
-- Integracja (unitapi-integration)
-
-2. **Kluczowe Zasady**:
-- Zachowanie kompatybilności wstecznej
-- Stopniowe wprowadzanie nowych komponentów
-- Ciągłe testowanie
-- Minimalizacja zmian w istniejącym kodzie
-
+- Implementacja bardziej zaawansowanego skanowania i wspoldzielenia zasobow

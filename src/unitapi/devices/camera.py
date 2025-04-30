@@ -1,10 +1,12 @@
 """
-camera.py
+Camera device implementation.
 """
 
-from .base import BaseDevice, DeviceStatus
 import asyncio
+import logging
 from typing import Dict, Any, Optional
+
+from .base import BaseDevice, DeviceStatus
 
 
 class CameraDevice(BaseDevice):
@@ -13,34 +15,31 @@ class CameraDevice(BaseDevice):
     """
 
     def __init__(
-            self,
-            device_id: str,
-            name: str,
-            metadata: Optional[Dict[str, Any]] = None
+        self, device_id: str, name: str, metadata: Optional[Dict[str, Any]] = None
     ):
         """
         Initialize camera device.
 
-        :param device_id: Unique device identifier
-        :param name: Device name
-        :param metadata: Additional device information
+        Args:
+            device_id: Unique device identifier
+            name: Device name
+            metadata: Additional device information
         """
         super().__init__(
-            device_id=device_id,
-            name=name,
-            device_type='camera',
-            metadata=metadata
+            device_id=device_id, name=name, device_type="camera", metadata=metadata
         )
+        self.logger = logging.getLogger(__name__)
 
         # Camera-specific attributes
-        self.resolution = metadata.get('resolution', '1080p')
-        self.fps = metadata.get('fps', 30)
+        self.resolution = metadata.get("resolution", "1080p") if metadata else "1080p"
+        self.fps = metadata.get("fps", 30) if metadata else 30
 
     async def capture_image(self) -> Dict[str, Any]:
         """
         Capture an image from the camera.
 
-        :return: Image capture result
+        Returns:
+            Image capture result
         """
         try:
             # Simulate image capture
@@ -48,47 +47,47 @@ class CameraDevice(BaseDevice):
             await asyncio.sleep(1)  # Simulate capture delay
 
             return {
-                'device_id': self.device_id,
-                'resolution': self.resolution,
-                'timestamp': asyncio.get_event_loop().time(),
-                'image_data': b'MOCK_IMAGE_DATA'  # Placeholder for actual image data
+                "device_id": self.device_id,
+                "resolution": self.resolution,
+                "timestamp": asyncio.get_event_loop().time(),
+                "image_data": b"MOCK_IMAGE_DATA",  # Placeholder for actual image data
             }
         except Exception as e:
             self.logger.error(f"Image capture failed: {e}")
-            return {
-                'error': str(e)
-            }
+            return {"error": str(e)}
 
     async def start_video_stream(self, duration: int = 10) -> Dict[str, Any]:
         """
         Start video streaming.
 
-        :param duration: Stream duration in seconds
-        :return: Stream start result
+        Args:
+            duration: Stream duration in seconds
+
+        Returns:
+            Stream start result
         """
         try:
             self.logger.info(f"Starting video stream from {self.name}")
             await asyncio.sleep(1)  # Simulate stream start delay
 
             return {
-                'device_id': self.device_id,
-                'resolution': self.resolution,
-                'fps': self.fps,
-                'duration': duration,
-                'stream_id': f'stream_{self.device_id}',
-                'status': 'started'
+                "device_id": self.device_id,
+                "resolution": self.resolution,
+                "fps": self.fps,
+                "duration": duration,
+                "stream_id": f"stream_{self.device_id}",
+                "status": "started",
             }
         except Exception as e:
             self.logger.error(f"Video stream start failed: {e}")
-            return {
-                'error': str(e)
-            }
+            return {"error": str(e)}
 
     async def connect(self) -> bool:
         """
         Connect to the camera device.
 
-        :return: Connection status
+        Returns:
+            Connection status
         """
         try:
             # Simulated connection logic
@@ -105,7 +104,8 @@ class CameraDevice(BaseDevice):
         """
         Disconnect from the camera device.
 
-        :return: Disconnection status
+        Returns:
+            Disconnection status
         """
         try:
             # Simulated disconnection logic
@@ -117,18 +117,30 @@ class CameraDevice(BaseDevice):
             self.logger.error(f"Camera disconnection failed: {e}")
             return False
 
-    async def execute_command(self, command: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_command(
+        self, command: str, params: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Execute a command on the camera device.
 
-        :param command: Command to execute
-        :param params: Command parameters
-        :return: Command execution result
+        Args:
+            command: Command to execute
+            params: Command parameters
+
+        Returns:
+            Command execution result
+
+        Raises:
+            ValueError: If command is not supported
         """
-        if command == 'capture_image':
-            return await self.capture_image()
-        elif command == 'start_stream':
-            duration = params.get('duration', 10)
-            return await self.start_video_stream(duration)
-        else:
-            raise ValueError(f"Unsupported command: {command}")
+        try:
+            if command == "capture_image":
+                return await self.capture_image()
+            elif command == "start_stream":
+                duration = params.get("duration", 10)
+                return await self.start_video_stream(duration)
+            else:
+                raise ValueError(f"Unsupported command: {command}")
+        except Exception as e:
+            self.logger.error(f"Command execution failed: {e}")
+            return {"error": str(e)}

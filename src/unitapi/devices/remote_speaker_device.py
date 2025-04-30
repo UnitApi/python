@@ -4,15 +4,14 @@ import numpy as np
 from typing import Dict, Any, Optional
 from .base import AudioDevice, DeviceStatus
 
+
 class RemoteSpeakerDevice(AudioDevice):
     """
     Advanced remote speaker device for network audio streaming.
     """
+
     def __init__(
-        self,
-        device_id: str,
-        name: str,
-        metadata: Optional[Dict[str, Any]] = None
+        self, device_id: str, name: str, metadata: Optional[Dict[str, Any]] = None
     ):
         """
         Initialize remote speaker device.
@@ -24,19 +23,19 @@ class RemoteSpeakerDevice(AudioDevice):
         super().__init__(
             device_id=device_id,
             name=name,
-            device_type='speaker',
-            metadata=metadata or {}
+            device_type="speaker",
+            metadata=metadata or {},
         )
 
         # Audio configuration
-        self.sample_rate = metadata.get('sample_rate', 44100)
-        self.channels = metadata.get('channels', 2)
+        self.sample_rate = metadata.get("sample_rate", 44100)
+        self.channels = metadata.get("channels", 2)
 
         # Logging setup
         self.logger = logging.getLogger(f"RemoteSpeakerDevice_{device_id}")
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         )
 
     async def connect(self) -> bool:
@@ -92,9 +91,7 @@ class RemoteSpeakerDevice(AudioDevice):
             return False
 
     async def execute_command(
-        self,
-        command: str,
-        params: Dict[str, Any]
+        self, command: str, params: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Execute a command on the remote speaker.
@@ -104,15 +101,15 @@ class RemoteSpeakerDevice(AudioDevice):
         :return: Command execution result
         """
         try:
-            if command == 'play_audio':
+            if command == "play_audio":
                 # Expect base64 encoded audio
                 import base64
 
-                if 'base64_data' in params:
-                    audio_bytes = base64.b64decode(params['base64_data'])
-                elif 'file_path' in params:
+                if "base64_data" in params:
+                    audio_bytes = base64.b64decode(params["base64_data"])
+                elif "file_path" in params:
                     # Read audio file
-                    with open(params['file_path'], 'rb') as f:
+                    with open(params["file_path"], "rb") as f:
                         audio_bytes = f.read()
                 else:
                     raise ValueError("No audio data provided")
@@ -121,8 +118,10 @@ class RemoteSpeakerDevice(AudioDevice):
                 success = await self.play_audio(audio_bytes)
 
                 return {
-                    'status': 'success' if success else 'error',
-                    'message': 'Audio playback completed' if success else 'Playback failed'
+                    "status": "success" if success else "error",
+                    "message": (
+                        "Audio playback completed" if success else "Playback failed"
+                    ),
                 }
 
             else:
@@ -130,16 +129,12 @@ class RemoteSpeakerDevice(AudioDevice):
 
         except Exception as e:
             self.logger.error(f"Command execution failed: {e}")
-            return {
-                'status': 'error',
-                'message': str(e)
-            }
+            return {"status": "error", "message": str(e)}
+
 
 # Utility function for generating test audio
 def generate_test_audio(
-    duration: float = 3.0,
-    frequency: float = 440.0,
-    sample_rate: int = 44100
+    duration: float = 3.0, frequency: float = 440.0, sample_rate: int = 44100
 ) -> bytes:
     """
     Generate a simple sine wave audio test signal.

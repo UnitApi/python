@@ -12,6 +12,7 @@ class AccessLevel(Enum):
     """
     Predefined access levels for device and system interactions.
     """
+
     NONE = auto()  # No access
     READ = auto()  # Read-only access
     WRITE = auto()  # Modify device state
@@ -31,43 +32,39 @@ class AccessControlManager:
 
         # Role-based access control mappings
         self._role_permissions: Dict[str, Dict[str, AccessLevel]] = {
-            'admin': {
-                'devices': AccessLevel.ADMIN,
-                'system': AccessLevel.ADMIN,
-                'network': AccessLevel.ADMIN
+            "admin": {
+                "devices": AccessLevel.ADMIN,
+                "system": AccessLevel.ADMIN,
+                "network": AccessLevel.ADMIN,
             },
-            'operator': {
-                'devices': AccessLevel.WRITE,
-                'system': AccessLevel.READ,
-                'network': AccessLevel.READ
+            "operator": {
+                "devices": AccessLevel.WRITE,
+                "system": AccessLevel.READ,
+                "network": AccessLevel.READ,
             },
-            'viewer': {
-                'devices': AccessLevel.READ,
-                'system': AccessLevel.READ,
-                'network': AccessLevel.NONE
-            }
+            "viewer": {
+                "devices": AccessLevel.READ,
+                "system": AccessLevel.READ,
+                "network": AccessLevel.NONE,
+            },
         }
 
         # Resource-specific access rules
         self._resource_access: Dict[str, Dict[str, List[str]]] = {
-            'temperature_sensor': {
-                'read': ['admin', 'operator', 'viewer'],
-                'write': ['admin', 'operator']
+            "temperature_sensor": {
+                "read": ["admin", "operator", "viewer"],
+                "write": ["admin", "operator"],
             },
-            'camera': {
-                'read': ['admin', 'operator', 'viewer'],
-                'control': ['admin', 'operator']
-            }
+            "camera": {
+                "read": ["admin", "operator", "viewer"],
+                "control": ["admin", "operator"],
+            },
         }
 
         # Dynamic rule registry
         self._dynamic_rules: List[Callable] = []
 
-    def define_role(
-            self,
-            role_name: str,
-            permissions: Dict[str, AccessLevel]
-    ) -> None:
+    def define_role(self, role_name: str, permissions: Dict[str, AccessLevel]) -> None:
         """
         Define or modify a role's permissions.
 
@@ -78,10 +75,7 @@ class AccessControlManager:
         self.logger.info(f"Defined role: {role_name}")
 
     def add_resource_rule(
-            self,
-            resource: str,
-            action: str,
-            allowed_roles: List[str]
+        self, resource: str, action: str, allowed_roles: List[str]
     ) -> None:
         """
         Add a resource-specific access rule.
@@ -106,11 +100,11 @@ class AccessControlManager:
         self.logger.info("Added dynamic access rule")
 
     def check_access(
-            self,
-            role: str,
-            resource: str,
-            action: str,
-            context: Optional[Dict[str, Any]] = None
+        self,
+        role: str,
+        resource: str,
+        action: str,
+        context: Optional[Dict[str, Any]] = None,
     ) -> bool:
         """
         Check if a role has access to perform an action on a resource.
@@ -151,11 +145,11 @@ class AccessControlManager:
         return True
 
     async def audit_access(
-            self,
-            role: str,
-            resource: str,
-            action: str,
-            context: Optional[Dict[str, Any]] = None
+        self,
+        role: str,
+        resource: str,
+        action: str,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Comprehensive access audit with detailed logging.
@@ -169,12 +163,12 @@ class AccessControlManager:
         access_granted = self.check_access(role, resource, action, context)
 
         audit_log = {
-            'timestamp': asyncio.get_event_loop().time(),
-            'role': role,
-            'resource': resource,
-            'action': action,
-            'access_granted': access_granted,
-            'context': context or {}
+            "timestamp": asyncio.get_event_loop().time(),
+            "role": role,
+            "resource": resource,
+            "action": action,
+            "access_granted": access_granted,
+            "context": context or {},
         }
 
         # Optional: Persist audit log (could be extended to database)
@@ -205,18 +199,15 @@ async def main():
 
     # Define custom dynamic rule
     def temperature_limit_rule(
-            role: str,
-            resource: str,
-            action: str,
-            context: Optional[Dict[str, Any]] = None
+        role: str, resource: str, action: str, context: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Example dynamic rule: Prevent temperature changes beyond safe limits.
         """
-        if resource == 'temperature_sensor' and action == 'write':
+        if resource == "temperature_sensor" and action == "write":
             # Example: Only allow temperature changes within 18-30°C range
-            if context and context.get('temperature'):
-                temp = context['temperature']
+            if context and context.get("temperature"):
+                temp = context["temperature"]
                 return 18 <= temp <= 30
         return True
 
@@ -226,30 +217,30 @@ async def main():
     # Test access scenarios
     print("Admin access to sensor:")
     admin_result = await acl_manager.audit_access(
-        role='admin',
-        resource='temperature_sensor',
-        action='write',
-        context={'temperature': 22}
+        role="admin",
+        resource="temperature_sensor",
+        action="write",
+        context={"temperature": 22},
     )
     print(admin_result)
 
     print("\nOperator access to sensor:")
     operator_result = await acl_manager.audit_access(
-        role='operator',
-        resource='temperature_sensor',
-        action='write',
-        context={'temperature': 35}
+        role="operator",
+        resource="temperature_sensor",
+        action="write",
+        context={"temperature": 35},
     )
     print(operator_result)
 
     print("\nViewer access to sensor:")
     viewer_result = await acl_manager.audit_access(
-        role='viewer',
-        resource='temperature_sensor',
-        action='write'
+        role="viewer", resource="temperature_sensor", action="write"
     )
     print(viewer_result)
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())
