@@ -149,7 +149,7 @@ We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING
 
 ## Support
 
-- GitHub Issues: [UnitAPI Issues](https://github.com/yourUnitApi/python/issues)
+- GitHub Issues: [UnitAPI Issues](https://github.com/UnitApi/python/issues)
 - Email: support@unitapi.com
 
 ## License

@@ -46,14 +46,14 @@ class UnitAPIClient:
                 # Convert command to JSON
                 command_json = json.dumps(command)
                 self.logger.debug(f"Sending command: {command_json}")
-                
+
                 # Send command
                 await websocket.send(command_json)
-                
+
                 # Wait for response
                 response_json = await websocket.recv()
                 self.logger.debug(f"Received response: {response_json}")
-                
+
                 # Parse response
                 response = json.loads(response_json)
                 return response
@@ -133,7 +133,7 @@ class UnitAPIClient:
             "action": "execute_command",
             "device_id": device_id,
             "command": command,
-            "params": params or {}
+            "params": params or {},
         }
-        
+
         return await self.send_command(cmd)

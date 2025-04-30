@@ -195,7 +195,9 @@ class InputDevice(BaseDevice):
         super().__init__(device_id, name, device_type, metadata)
         self._event_listeners = []
 
-    async def send_input(self, input_type: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def send_input(
+        self, input_type: str, input_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Send input to the device.
 

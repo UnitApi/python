@@ -150,7 +150,7 @@ We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING
 
 ## Support
 
-- GitHub Issues: [UnitAPI Issues](https://github.com/yourUnitApi/python/issues)
+- GitHub Issues: [UnitAPI Issues](https://github.com/UnitApi/python/issues)
 - Email: support@unitapi.com
 
 ## License
@@ -225,7 +225,7 @@ pip install unitapi[websocket]
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourUnitApi/python.git
+git clone https://github.com/UnitApi/python.git
 cd unitapi
 
 # Install dependencies
@@ -300,7 +300,7 @@ For contributors and developers:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourUnitApi/python.git
+git clone https://github.com/UnitApi/python.git
 cd unitapi
 
 # Create virtual environment

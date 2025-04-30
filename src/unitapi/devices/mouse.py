@@ -31,7 +31,7 @@ class MouseDevice(InputDevice):
             device_id=device_id, name=name, device_type="mouse", metadata=metadata
         )
         self.logger = logging.getLogger(__name__)
-        
+
         # Mouse-specific attributes
         self._position = pyautogui.position()  # Get initial physical mouse position
         self.buttons_state = {
@@ -39,22 +39,22 @@ class MouseDevice(InputDevice):
             "right": False,
             "middle": False,
         }
-    
+
     @property
     def position(self) -> Tuple[int, int]:
         """
         Get the current physical mouse position.
-        
+
         Returns:
             Current mouse position as (x, y) tuple
         """
         return pyautogui.position()
-    
+
     @position.setter
     def position(self, pos: Tuple[int, int]) -> None:
         """
         Set the internal position tracking (not the actual mouse position).
-        
+
         Args:
             pos: Position as (x, y) tuple
         """
@@ -73,13 +73,13 @@ class MouseDevice(InputDevice):
         """
         try:
             self.logger.info(f"Moving mouse to position ({x}, {y})")
-            
+
             # Move the physical mouse using PyAutoGUI
             pyautogui.moveTo(x, y)
-            
+
             # Update internal position tracking
             self._position = (x, y)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -104,13 +104,13 @@ class MouseDevice(InputDevice):
             x, y = self.position
             new_x, new_y = x + dx, y + dy
             self.logger.info(f"Moving mouse by ({dx}, {dy}) to ({new_x}, {new_y})")
-            
+
             # Move the physical mouse using PyAutoGUI
             pyautogui.moveRel(dx, dy)
-            
+
             # Update internal position tracking
             self._position = (new_x, new_y)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -133,12 +133,12 @@ class MouseDevice(InputDevice):
         try:
             if button not in self.buttons_state:
                 raise ValueError(f"Unsupported mouse button: {button}")
-                
+
             self.logger.info(f"Clicking {button} mouse button at {self.position}")
-            
+
             # Click the physical mouse using PyAutoGUI
             pyautogui.click(button=button)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -162,12 +162,14 @@ class MouseDevice(InputDevice):
         try:
             if button not in self.buttons_state:
                 raise ValueError(f"Unsupported mouse button: {button}")
-                
-            self.logger.info(f"Double-clicking {button} mouse button at {self.position}")
-            
+
+            self.logger.info(
+                f"Double-clicking {button} mouse button at {self.position}"
+            )
+
             # Double-click the physical mouse using PyAutoGUI
             pyautogui.doubleClick(button=button)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -191,15 +193,15 @@ class MouseDevice(InputDevice):
         try:
             if button not in self.buttons_state:
                 raise ValueError(f"Unsupported mouse button: {button}")
-                
+
             self.logger.info(f"Pressing {button} mouse button at {self.position}")
-            
+
             # Press the physical mouse button using PyAutoGUI
             pyautogui.mouseDown(button=button)
-            
+
             # Update button state
             self.buttons_state[button] = True
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -224,15 +226,15 @@ class MouseDevice(InputDevice):
         try:
             if button not in self.buttons_state:
                 raise ValueError(f"Unsupported mouse button: {button}")
-                
+
             self.logger.info(f"Releasing {button} mouse button at {self.position}")
-            
+
             # Release the physical mouse button using PyAutoGUI
             pyautogui.mouseUp(button=button)
-            
+
             # Update button state
             self.buttons_state[button] = False
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -256,11 +258,13 @@ class MouseDevice(InputDevice):
         """
         try:
             direction = "up" if amount > 0 else "down"
-            self.logger.info(f"Scrolling {direction} by {abs(amount)} at {self.position}")
-            
+            self.logger.info(
+                f"Scrolling {direction} by {abs(amount)} at {self.position}"
+            )
+
             # Scroll the physical mouse wheel using PyAutoGUI
             pyautogui.scroll(amount)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -285,11 +289,13 @@ class MouseDevice(InputDevice):
         """
         try:
             start_x, start_y = self.position
-            self.logger.info(f"Dragging from ({start_x}, {start_y}) to ({x}, {y}) with {button} button")
-            
+            self.logger.info(
+                f"Dragging from ({start_x}, {start_y}) to ({x}, {y}) with {button} button"
+            )
+
             # Drag the physical mouse using PyAutoGUI
             pyautogui.dragTo(x, y, button=button)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -353,7 +359,7 @@ class MouseDevice(InputDevice):
             ValueError: If command is not supported
         """
         params = params or {}
-        
+
         try:
             if command == "move_to":
                 x = params.get("x", 0)

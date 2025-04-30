@@ -31,7 +31,7 @@ class KeyboardDevice(InputDevice):
             device_id=device_id, name=name, device_type="keyboard", metadata=metadata
         )
         self.logger = logging.getLogger(__name__)
-        
+
         # Keyboard-specific attributes
         self.pressed_keys: Set[str] = set()  # Currently pressed keys
         self.layout = metadata.get("layout", "us") if metadata else "us"
@@ -54,17 +54,17 @@ class KeyboardDevice(InputDevice):
         """
         try:
             self.logger.info(f"Pressing key: {key}")
-            
+
             # Press the physical key using PyAutoGUI
             pyautogui.keyDown(key)
-            
+
             # Handle modifier keys
             if key.lower() in self.modifiers:
                 self.modifiers[key.lower()] = True
-            
+
             # Add to pressed keys
             self.pressed_keys.add(key)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -87,18 +87,18 @@ class KeyboardDevice(InputDevice):
         """
         try:
             self.logger.info(f"Releasing key: {key}")
-            
+
             # Release the physical key using PyAutoGUI
             pyautogui.keyUp(key)
-            
+
             # Handle modifier keys
             if key.lower() in self.modifiers:
                 self.modifiers[key.lower()] = False
-            
+
             # Remove from pressed keys
             if key in self.pressed_keys:
                 self.pressed_keys.remove(key)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -121,10 +121,10 @@ class KeyboardDevice(InputDevice):
         """
         try:
             self.logger.info(f"Pressing and releasing key: {key}")
-            
+
             # Press and release the physical key using PyAutoGUI
             pyautogui.press(key)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -146,10 +146,10 @@ class KeyboardDevice(InputDevice):
         """
         try:
             self.logger.info(f"Typing text: {text}")
-            
+
             # Type the text using PyAutoGUI
             pyautogui.write(text)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -173,15 +173,15 @@ class KeyboardDevice(InputDevice):
         try:
             key_list = list(keys)
             self.logger.info(f"Pressing hotkey: {'+'.join(key_list)}")
-            
+
             # Press the hotkey combination using PyAutoGUI
             pyautogui.hotkey(*key_list)
-            
+
             # Update internal state
             for key in key_list:
                 if key.lower() in self.modifiers:
                     self.modifiers[key.lower()] = False
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -200,15 +200,15 @@ class KeyboardDevice(InputDevice):
         """
         try:
             self.logger.info("Releasing all keys")
-            
+
             # Make a copy of pressed_keys to avoid modification during iteration
             keys_to_release = list(self.pressed_keys)
-            
+
             # Release all keys
             for key in keys_to_release:
                 pyautogui.keyUp(key)
                 self.pressed_keys.remove(key)
-            
+
             # Reset modifiers
             for mod in self.modifiers:
                 self.modifiers[mod] = False
@@ -217,7 +217,7 @@ class KeyboardDevice(InputDevice):
                     pyautogui.keyUp(mod)
                 except:
                     pass
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -255,7 +255,7 @@ class KeyboardDevice(InputDevice):
         try:
             # Release any pressed keys before disconnecting
             await self.release_all_keys()
-            
+
             # Simulated disconnection logic
             await asyncio.sleep(0.3)
             self.status = DeviceStatus.OFFLINE
@@ -282,7 +282,7 @@ class KeyboardDevice(InputDevice):
             ValueError: If command is not supported
         """
         params = params or {}
-        
+
         try:
             if command == "key_down":
                 key = params.get("key")

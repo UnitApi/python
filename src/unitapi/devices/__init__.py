@@ -27,7 +27,6 @@ __all__ = [
     "AudioDevice",
     "GPIODevice",
     "InputDevice",
-    
     # Device implementations
     "CameraDevice",
     "MicrophoneDevice",

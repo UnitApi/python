@@ -29,7 +29,7 @@ class GamepadDevice(InputDevice):
             device_id=device_id, name=name, device_type="gamepad", metadata=metadata
         )
         self.logger = logging.getLogger(__name__)
-        
+
         # Gamepad-specific attributes
         self.buttons = {
             "a": False,
@@ -50,20 +50,22 @@ class GamepadDevice(InputDevice):
             "dpad_right": False,
             "guide": False,  # Xbox button, PS button, etc.
         }
-        
+
         # Analog sticks (x, y) where each axis ranges from -1.0 to 1.0
         self.left_stick = (0.0, 0.0)
         self.right_stick = (0.0, 0.0)
-        
+
         # Vibration/rumble state
         self.vibration = {
             "left_motor": 0.0,  # 0.0-1.0
             "right_motor": 0.0,  # 0.0-1.0
         }
-        
+
         # Controller type
-        self.controller_type = metadata.get("controller_type", "xbox") if metadata else "xbox"
-        
+        self.controller_type = (
+            metadata.get("controller_type", "xbox") if metadata else "xbox"
+        )
+
         # Battery level (0.0-1.0)
         self.battery_level = metadata.get("battery_level", 1.0) if metadata else 1.0
 
@@ -80,16 +82,16 @@ class GamepadDevice(InputDevice):
         try:
             if button not in self.buttons:
                 raise ValueError(f"Unsupported button: {button}")
-                
+
             self.logger.info(f"Pressing button: {button}")
-            
+
             # Press button
             await self.button_down(button)
             await asyncio.sleep(0.1)
-            
+
             # Release button
             result = await self.button_up(button)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -113,18 +115,18 @@ class GamepadDevice(InputDevice):
         try:
             if button not in self.buttons:
                 raise ValueError(f"Unsupported button: {button}")
-                
+
             self.logger.info(f"Button down: {button}")
-            
+
             # Set button state
             if button in ["left_trigger", "right_trigger"]:
                 self.buttons[button] = 1.0  # Full press for triggers
             else:
                 self.buttons[button] = True
-            
+
             # Simulate button press
             await asyncio.sleep(0.05)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -148,18 +150,18 @@ class GamepadDevice(InputDevice):
         try:
             if button not in self.buttons:
                 raise ValueError(f"Unsupported button: {button}")
-                
+
             self.logger.info(f"Button up: {button}")
-            
+
             # Set button state
             if button in ["left_trigger", "right_trigger"]:
                 self.buttons[button] = 0.0  # Release for triggers
             else:
                 self.buttons[button] = False
-            
+
             # Simulate button release
             await asyncio.sleep(0.05)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -184,18 +186,18 @@ class GamepadDevice(InputDevice):
         try:
             if trigger not in ["left_trigger", "right_trigger"]:
                 raise ValueError(f"Unsupported trigger: {trigger}")
-                
+
             # Clamp value between 0.0 and 1.0
             value = max(0.0, min(1.0, value))
-            
+
             self.logger.info(f"Setting {trigger} to {value}")
-            
+
             # Set trigger value
             self.buttons[trigger] = value
-            
+
             # Simulate trigger movement
             await asyncio.sleep(0.05)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -206,9 +208,7 @@ class GamepadDevice(InputDevice):
             self.logger.error(f"Set trigger failed: {e}")
             return {"error": str(e)}
 
-    async def move_stick(
-        self, stick: str, x: float, y: float
-    ) -> Dict[str, Any]:
+    async def move_stick(self, stick: str, x: float, y: float) -> Dict[str, Any]:
         """
         Move an analog stick.
 
@@ -223,22 +223,22 @@ class GamepadDevice(InputDevice):
         try:
             if stick not in ["left_stick", "right_stick"]:
                 raise ValueError(f"Unsupported stick: {stick}")
-                
+
             # Clamp values between -1.0 and 1.0
             x = max(-1.0, min(1.0, x))
             y = max(-1.0, min(1.0, y))
-            
+
             self.logger.info(f"Moving {stick} to ({x}, {y})")
-            
+
             # Set stick position
             if stick == "left_stick":
                 self.left_stick = (x, y)
             else:
                 self.right_stick = (x, y)
-            
+
             # Simulate stick movement
             await asyncio.sleep(0.05)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -268,21 +268,21 @@ class GamepadDevice(InputDevice):
                 # Clamp value between 0.0 and 1.0
                 left_motor = max(0.0, min(1.0, left_motor))
                 self.vibration["left_motor"] = left_motor
-            
+
             # Update right motor if provided
             if right_motor is not None:
                 # Clamp value between 0.0 and 1.0
                 right_motor = max(0.0, min(1.0, right_motor))
                 self.vibration["right_motor"] = right_motor
-            
+
             self.logger.info(
                 f"Setting vibration: left={self.vibration['left_motor']}, "
                 f"right={self.vibration['right_motor']}"
             )
-            
+
             # Simulate vibration
             await asyncio.sleep(0.05)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -301,25 +301,25 @@ class GamepadDevice(InputDevice):
         """
         try:
             self.logger.info("Resetting gamepad state")
-            
+
             # Reset buttons
             for button in self.buttons:
                 if button in ["left_trigger", "right_trigger"]:
                     self.buttons[button] = 0.0
                 else:
                     self.buttons[button] = False
-            
+
             # Reset sticks
             self.left_stick = (0.0, 0.0)
             self.right_stick = (0.0, 0.0)
-            
+
             # Reset vibration
             self.vibration["left_motor"] = 0.0
             self.vibration["right_motor"] = 0.0
-            
+
             # Simulate reset
             await asyncio.sleep(0.1)
-            
+
             return {
                 "status": "success",
                 "device_id": self.device_id,
@@ -362,10 +362,10 @@ class GamepadDevice(InputDevice):
             await asyncio.sleep(0.5)
             self.status = DeviceStatus.ONLINE
             self.logger.info(f"Gamepad {self.device_id} connected")
-            
+
             # Reset state on connect
             await self.reset_state()
-            
+
             return True
         except Exception as e:
             self.status = DeviceStatus.ERROR
@@ -382,7 +382,7 @@ class GamepadDevice(InputDevice):
         try:
             # Reset state before disconnecting
             await self.reset_state()
-            
+
             # Simulated disconnection logic
             await asyncio.sleep(0.3)
             self.status = DeviceStatus.OFFLINE
@@ -409,7 +409,7 @@ class GamepadDevice(InputDevice):
             ValueError: If command is not supported
         """
         params = params or {}
-        
+
         try:
             if command == "press_button":
                 button = params.get("button")

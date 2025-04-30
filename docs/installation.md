@@ -27,7 +27,7 @@ pip install unitapi[websocket]
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourUnitApi/python.git
+git clone https://github.com/UnitApi/python.git
 cd unitapi
 
 # Install dependencies
@@ -102,7 +102,7 @@ For contributors and developers:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourUnitApi/python.git
+git clone https://github.com/UnitApi/python.git
 cd unitapi
 
 # Create virtual environment

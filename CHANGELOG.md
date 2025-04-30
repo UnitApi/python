@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.13] - 2025-04-30
+
+### Added
+- Changes in examples/rpi/camera/README.md
+- Changes in examples/rpi/camera/camera_client.py
+- Changes in examples/rpi/camera/camera_module.py
+- Changes in examples/rpi/camera/camera_server.py
+- Changes in examples/rpi/gpio/README.md
+- Changes in examples/rpi/gpio/gpio_client.py
+- Changes in examples/rpi/gpio/gpio_control.py
+- Changes in examples/rpi/gpio/gpio_server.py
+- Changes in examples/rpi/gpio/led_control.py
+- Changes in examples/rpi/gpio/sensors.py
+- Changes in examples/rpi/keyboard/README.md
+- Changes in examples/rpi/keyboard/keyboard_client.py
+- Changes in examples/rpi/keyboard/keyboard_server.py
+- Changes in examples/rpi/mic/README.md
+- Changes in examples/rpi/mic/microphone_client.py
+- Changes in examples/rpi/mic/microphone_server.py
+- Changes in examples/rpi/mouse/README.md
+- Changes in examples/rpi/mouse/mouse_client.py
+- Changes in examples/rpi/mouse/mouse_server.py
+- Changes in examples/rpi/respeaker/README.md
+- Changes in examples/rpi/respeaker/respeaker_client.py
+- Changes in examples/rpi/respeaker/respeaker_server.py
+- Changes in examples/rpi/speaker/README.md
+- Changes in examples/rpi/speaker/speaker_client.py
+- Changes in examples/rpi/speaker/speaker_server.py
+- Changes in scripts/rpi/fix_cert.sh
+
 ## [0.1.12] - 2025-04-30
 
 ### Added
