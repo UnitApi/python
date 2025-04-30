@@ -173,14 +173,38 @@ echo "UnitAPI Remote Keyboard Server Installation Script"
 echo "=================================================="
 echo
 
-# Service command function
+# Service command function with improved error handling
 handle_service_command() {
     local command="$1"
     
     case "$command" in
         start|stop|restart|status)
             echo "Executing service command: $command"
+            
+            # First check if the service exists
+            if ! ssh_connect "systemctl list-unit-files | grep -q unitapi-keyboard.service"; then
+                echo "Error: unitapi-keyboard.service not found on the remote system."
+                echo
+                echo "The service may not be installed. You have the following options:"
+                echo "1. Run this script without the --service-command option to install the service"
+                echo "2. Check if the service is installed under a different name:"
+                echo "   ssh $RPI_USER@$RPI_HOST \"systemctl list-unit-files | grep unitapi\""
+                echo
+                return 1
+            fi
+            
+            # Execute the command
             ssh_connect "sudo systemctl $command unitapi-keyboard.service"
+            
+            # If status command, provide additional information
+            if [ "$command" = "status" ]; then
+                echo
+                echo "Additional troubleshooting commands:"
+                echo "- View service logs: ssh $RPI_USER@$RPI_HOST \"sudo journalctl -u unitapi-keyboard.service\""
+                echo "- Check if Python is installed: ssh $RPI_USER@$RPI_HOST \"python3 --version\""
+                echo "- Verify installation directory: ssh $RPI_USER@$RPI_HOST \"ls -la $INSTALL_DIR\""
+            fi
+            
             return $?
             ;;
         *)
