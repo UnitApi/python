@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.9] - 2025-04-30
+
+### Added
+- Changes in docs/remote_keyboard_control.md
+- Changes in examples/README_remote_keyboard.md
+- Changes in examples/remote_keyboard_control.py
+- Changes in examples/remote_keyboard_server.py
+- Changes in scripts/install_remote_keyboard_server.sh
+
 ## [0.1.8] - 2025-04-30
 
 ## [0.1.7] - 2025-04-30
