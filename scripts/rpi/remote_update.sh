@@ -355,20 +355,49 @@ configure_git() {
     print_substep "Instalacja Git..."
     apt-get install -y git
 
-    print_substep "Konfiguracja bezpieczeństwa Git..."
-    git config --system http.sslBackend openssl
-    git config --system http.sslCAInfo /etc/ssl/certs/ca-certificates.crt
+    print_substep "Wykrywanie obsługiwanego backendu SSL w Git..."
+    # Sprawdźmy, jakie backendy SSL są obsługiwane
+    local SUPPORTED_SSL=$(git -c http.sslBackend=invalid 2>&1 | grep -o "Supported SSL backends:.*" | sed 's/Supported SSL backends: *//')
 
-    # Dodatkowa konfiguracja, która może pomóc ze starszymi systemami
-    print_message "Dodawanie konfiguracji dla starszych systemów..."
-    cat > /etc/gitconfig << EOL
+    print_message "Wykryte obsługiwane backendy SSL: $SUPPORTED_SSL"
+
+    if echo "$SUPPORTED_SSL" | grep -q "openssl"; then
+        print_message "Konfiguracja Git dla backendu OpenSSL..."
+        git config --system http.sslBackend openssl
+    elif echo "$SUPPORTED_SSL" | grep -q "gnutls"; then
+        print_message "Konfiguracja Git dla backendu GnuTLS..."
+        git config --system --unset http.sslBackend 2>/dev/null || true
+    else
+        print_message "Nie wykryto ani OpenSSL ani GnuTLS, pomijam konfigurację backendu..."
+        git config --system --unset http.sslBackend 2>/dev/null || true
+    fi
+
+    print_substep "Konfiguracja wspólnych ustawień bezpieczeństwa Git..."
+    git config --system http.sslCAInfo /etc/ssl/certs/ca-certificates.crt
+    git config --system http.sslVerify true
+
+    # Aktualizacja lub tworzenie pliku gitconfig
+    print_message "Aktualizacja głównego pliku konfiguracyjnego Git..."
+
+    # Sprawdź istniejący plik i zachowaj jego zawartość
+    if [ -f /etc/gitconfig ]; then
+        # Usuń istniejącą sekcję [http] jeśli istnieje
+        sed -i '/^\[http\]/,/^\[/d' /etc/gitconfig
+    fi
+
+    # Dodaj nową sekcję [http] na końcu pliku
+    cat >> /etc/gitconfig << EOL
 [http]
-    sslBackend = openssl
     sslCAInfo = /etc/ssl/certs/ca-certificates.crt
     sslVerify = true
 EOL
 
     print_success "Konfiguracja Git została zakończona pomyślnie!"
+
+    # Instrukcje dla problemów z Git
+    print_message "Jeśli nadal występują problemy z certyfikatami w Git, możesz użyć:"
+    print_message "git -c http.sslVerify=false clone <url>"
+
     return 0
 }
 
@@ -380,11 +409,11 @@ install_python() {
     if grep -q "stretch" /etc/os-release; then
         print_warning "Na systemie Stretch dostępne są ograniczone wersje Pythona."
         print_substep "Instalacja Python 3.5 (najnowszy dla Stretch)..."
-        apt-get install -y python3 python3-pip python3-dev python3-setuptools python3-wheel python3-venv
+        apt-get install -y python3 python3-pip python3-dev python3-setuptools python3-wheel python3-venv build-essential libssl-dev libffi-dev
     else
         # Dla nowszych systemów spróbujmy dodać repozytorium deadsnakes
         print_substep "Próba instalacji nowszych wersji Pythona..."
-        apt-get install -y software-properties-common dirmngr apt-transport-https
+        apt-get install -y software-properties-common dirmngr apt-transport-https build-essential libssl-dev libffi-dev
 
         # Próba dodania repozytorium deadsnakes (może nie zadziałać na starszych systemach)
         add-apt-repository -y ppa:deadsnakes/ppa 2>/dev/null || print_warning "Nie można dodać repozytorium deadsnakes. Instalacja standardowej wersji Python z repozytorium."
@@ -411,6 +440,30 @@ install_python() {
     print_substep "Instalacja dodatkowych narzędzi Python..."
     python3 -m pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host piwheels.org pipenv pip-tools 2>/dev/null || print_warning "Nie udało się zainstalować wszystkich narzędzi Python."
 
+    # Instalacja pyenv do zarządzania wieloma wersjami Pythona
+    print_substep "Instalacja pyenv do zarządzania wieloma wersjami Pythona..."
+    apt-get install -y curl git libbz2-dev libreadline-dev libsqlite3-dev libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl || print_warning "Nie udało się zainstalować wszystkich zależności pyenv."
+
+    # Instalacja pyenv dla użytkownika pi, jeśli istnieje
+    if id "pi" &>/dev/null; then
+        print_message "Instalacja pyenv dla użytkownika pi..."
+        sudo -u pi bash -c 'curl -s https://pyenv.run | bash' || print_warning "Nie udało się zainstalować pyenv dla użytkownika pi."
+
+        # Dodanie konfiguracji pyenv do bashrc
+        if [ -f /home/pi/.bashrc ]; then
+            if ! grep -q "pyenv" /home/pi/.bashrc; then
+                cat >> /home/pi/.bashrc << EOL
+
+# Konfiguracja pyenv - menadżera wersji Pythona
+export PATH="/home/pi/.pyenv/bin:\$PATH"
+eval "\$(pyenv init --path)"
+eval "\$(pyenv virtualenv-init -)"
+EOL
+                print_message "Dodano konfigurację pyenv do .bashrc użytkownika pi"
+            fi
+        fi
+    fi
+
     print_success "Instalacja Pythona zakończona!"
 
     # Wyświetlenie informacji o zainstalowanej wersji
@@ -419,6 +472,12 @@ install_python() {
 
     print_message "Zainstalowana wersja Pythona: $PYTHON_VERSION"
     print_message "Zainstalowana wersja pip: $PIP_VERSION"
+
+    # Instrukcje dotyczące instalacji Pythona 3.11 za pomocą pyenv
+    print_message "Aby zainstalować nowsze wersje Pythona (np. 3.11) za pomocą pyenv, wykonaj:"
+    print_message "pyenv install 3.11.0  # Zainstaluj Python 3.11.0"
+    print_message "pyenv global 3.11.0  # Ustaw Python 3.11.0 jako domyślny"
+    print_message "python --version  # Sprawdź wersję"
 
     # Dodanie pomocnych informacji o instalacji pakietów z pominięciem weryfikacji certyfikatu
     print_message "Aby zainstalować pakiety z pominięciem weryfikacji certyfikatu, użyj:"

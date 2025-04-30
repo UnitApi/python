@@ -9,4 +9,5 @@ from . import devices
 __all__ = [
     "__version__",
     "core",
+    "devices",
 ]

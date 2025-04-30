@@ -33,7 +33,7 @@ class MouseDevice(InputDevice):
         self.logger = logging.getLogger(__name__)
 
         # Mouse-specific attributes
-        self._position = pyautogui.position()  # Get initial physical mouse position
+        self._position = (0, 0)  # Initialize position to (0, 0)
         self.buttons_state = {
             "left": False,
             "right": False,
@@ -43,12 +43,12 @@ class MouseDevice(InputDevice):
     @property
     def position(self) -> Tuple[int, int]:
         """
-        Get the current physical mouse position.
+        Get the current mouse position.
 
         Returns:
             Current mouse position as (x, y) tuple
         """
-        return pyautogui.position()
+        return self._position
 
     @position.setter
     def position(self, pos: Tuple[int, int]) -> None:
@@ -136,7 +136,16 @@ class MouseDevice(InputDevice):
 
             self.logger.info(f"Clicking {button} mouse button at {self.position}")
 
-            # Click the physical mouse using PyAutoGUI
+            # Use button_down and button_up methods
+            down_result = await self.button_down(button)
+            if "error" in down_result:
+                return down_result
+                
+            up_result = await self.button_up(button)
+            if "error" in up_result:
+                return up_result
+
+            # Also perform the physical click using PyAutoGUI
             pyautogui.click(button=button)
 
             return {
@@ -290,10 +299,24 @@ class MouseDevice(InputDevice):
         try:
             start_x, start_y = self.position
             self.logger.info(
-                f"Dragging from ({start_x}, {start_y}) to ({x}, {y}) with {button} button"
+                f"Dragging from ({start_x}, {start_y}) to ({x}, {y}) "
+                f"with {button} button"
             )
 
-            # Drag the physical mouse using PyAutoGUI
+            # Use button_down, move_to, and button_up methods
+            down_result = await self.button_down(button)
+            if "error" in down_result:
+                return down_result
+                
+            move_result = await self.move_to(x, y)
+            if "error" in move_result:
+                return move_result
+                
+            up_result = await self.button_up(button)
+            if "error" in up_result:
+                return up_result
+
+            # Also perform the physical drag using PyAutoGUI
             pyautogui.dragTo(x, y, button=button)
 
             return {

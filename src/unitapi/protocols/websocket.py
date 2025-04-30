@@ -11,7 +11,8 @@ try:
     import websockets
 except ImportError:
     print(
-        "websockets package not installed. Please install with: pip install websockets"
+        "websockets package not installed. "
+        "Please install with: pip install websockets"
     )
 
 
@@ -47,7 +48,8 @@ class WebSocketProtocol:
         """
         try:
             # Connect to WebSocket server
-            self._websocket = await websockets.connect(f"ws://{self.host}:{self.port}")
+            uri = f"ws://{self.host}:{self.port}"
+            self._websocket = await websockets.connect(uri)
 
             # Set connection event
             self._connection_event.set()
@@ -62,7 +64,8 @@ class WebSocketProtocol:
 
         except ImportError:
             self.logger.error(
-                "websockets package not installed. Please install with: pip install websockets"
+                "websockets package not installed. "
+                "Please install with: pip install websockets"
             )
             return False
 
@@ -209,7 +212,8 @@ class WebSocketProtocol:
             # Example device command processing
             device_id = data.get("device_id")
             command = data.get("command")
-            params = data.get("params", {})
+            # Params available for future use
+            # params = data.get("params", {})
 
             # Simulated command execution
             return {
@@ -280,9 +284,8 @@ async def main():
         await ws_protocol.connect()
 
         # Send a device command
-        await ws_protocol.send(
-            "device_command", {"device_id": "sensor_01", "command": "read_temperature"}
-        )
+        command_data = {"device_id": "sensor_01", "command": "read_temperature"}
+        await ws_protocol.send("device_command", command_data)
 
         # Keep connection open briefly
         await asyncio.sleep(5)

@@ -7,7 +7,6 @@ from .base import (
     BaseDevice,
     SensorDevice,
     AudioDevice,
-    GPIODevice,
     InputDevice,
 )
 from .camera import CameraDevice

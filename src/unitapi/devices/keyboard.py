@@ -122,7 +122,16 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Pressing and releasing key: {key}")
 
-            # Press and release the physical key using PyAutoGUI
+            # Use key_down and key_up methods
+            down_result = await self.key_down(key)
+            if "error" in down_result:
+                return down_result
+                
+            up_result = await self.key_up(key)
+            if "error" in up_result:
+                return up_result
+
+            # Also perform the physical key press using PyAutoGUI
             pyautogui.press(key)
 
             return {
@@ -147,7 +156,13 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Typing text: {text}")
 
-            # Type the text using PyAutoGUI
+            # Use press_key method for each character
+            for char in text:
+                result = await self.press_key(char)
+                if "error" in result:
+                    return result
+
+            # Also type the text using PyAutoGUI for physical keyboard
             pyautogui.write(text)
 
             return {
@@ -174,13 +189,23 @@ class KeyboardDevice(InputDevice):
             key_list = list(keys)
             self.logger.info(f"Pressing hotkey: {'+'.join(key_list)}")
 
-            # Press the hotkey combination using PyAutoGUI
-            pyautogui.hotkey(*key_list)
-
-            # Update internal state
+            # Press all keys in sequence
             for key in key_list:
-                if key.lower() in self.modifiers:
-                    self.modifiers[key.lower()] = False
+                down_result = await self.key_down(key)
+                if "error" in down_result:
+                    # If there's an error, try to release any keys that were pressed
+                    for k in reversed(key_list[:key_list.index(key)]):
+                        await self.key_up(k)
+                    return down_result
+
+            # Release keys in reverse order
+            for key in reversed(key_list):
+                up_result = await self.key_up(key)
+                if "error" in up_result:
+                    return up_result
+
+            # Also perform the physical hotkey press using PyAutoGUI
+            pyautogui.hotkey(*key_list)
 
             return {
                 "status": "success",
@@ -215,7 +240,7 @@ class KeyboardDevice(InputDevice):
                 # Make sure modifier keys are released
                 try:
                     pyautogui.keyUp(mod)
-                except:
+                except Exception:
                     pass
 
             return {

@@ -263,14 +263,39 @@ configure_git() {
     print_substep "Instalacja Git..."
     apt-get install -y git
     
-    print_substep "Konfiguracja bezpieczeństwa Git..."
-    git config --system http.sslBackend openssl
+    print_substep "Wykrywanie obsługiwanego backendu SSL w Git..."
+    # Sprawdźmy, jakie backendy SSL są obsługiwane
+    local SUPPORTED_SSL=$(git -c http.sslBackend=invalid 2>&1 | grep -o "Supported SSL backends:.*" | sed 's/Supported SSL backends: *//')
+
+    print_message "Wykryte obsługiwane backendy SSL: $SUPPORTED_SSL"
+
+    if echo "$SUPPORTED_SSL" | grep -q "openssl"; then
+        print_message "Konfiguracja Git dla backendu OpenSSL..."
+        git config --system http.sslBackend openssl
+    elif echo "$SUPPORTED_SSL" | grep -q "gnutls"; then
+        print_message "Konfiguracja Git dla backendu GnuTLS..."
+        git config --system --unset http.sslBackend 2>/dev/null || true
+    else
+        print_message "Nie wykryto ani OpenSSL ani GnuTLS, pomijam konfigurację backendu..."
+        git config --system --unset http.sslBackend 2>/dev/null || true
+    fi
+
+    print_substep "Konfiguracja wspólnych ustawień bezpieczeństwa Git..."
     git config --system http.sslCAInfo /etc/ssl/certs/ca-certificates.crt
-    
-    # Dodatkowa konfiguracja dla starszych systemów
-    cat > /etc/gitconfig << EOL
+    git config --system http.sslVerify true
+
+    # Aktualizacja lub tworzenie pliku gitconfig
+    print_message "Aktualizacja głównego pliku konfiguracyjnego Git..."
+
+    # Sprawdź istniejący plik i zachowaj jego zawartość
+    if [ -f /etc/gitconfig ]; then
+        # Usuń istniejącą sekcję [http] jeśli istnieje
+        sed -i '/^\[http\]/,/^\[/d' /etc/gitconfig
+    fi
+
+    # Dodaj nową sekcję [http] na końcu pliku
+    cat >> /etc/gitconfig << EOL
 [http]
-    sslBackend = openssl
     sslCAInfo = /etc/ssl/certs/ca-certificates.crt
     sslVerify = true
 EOL
