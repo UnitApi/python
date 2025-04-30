@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.17] - 2025-04-30
+
+### Added
+- Changes in examples/pc/README.md
+- Changes in examples/pc/camera/README.md
+- Changes in examples/pc/microphone/README.md
+- Changes in examples/pc/microphone/microphone_input_client.py
+- Changes in examples/pc/microphone/microphone_recording_client.py
+- Changes in examples/pc/microphone/microphone_server.py
+- Changes in examples/pc/misc/device_discovery.py
+- Changes in examples/pc/speaker/README.md
+- Changes in examples/pc/speaker/speaker_audio_playback.py
+- Changes in examples/pc/speaker/speaker_audio_playback_fixed.py
+- Changes in examples/pc/speaker/speaker_client.py
+- Changes in examples/pc/speaker/speaker_playback.py
+- Changes in examples/pc/speaker/speaker_playback_fixed.py
+- Changes in examples/pc/speaker/speaker_server.py
+
 ## [0.1.16] - 2025-04-30
 
 ### Added
