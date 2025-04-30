@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.10] - 2025-04-30
+
+### Added
+- Changes in docs/remote_keyboard_server_installation.md
+- Changes in docs/ssh_tools.md
+- Changes in examples/README_remote_keyboard_fixed.md
+- Changes in examples/remote_keyboard_control_fixed.py
+- Changes in examples/ssh_connector_example.py
+- Changes in scripts/README_ssh_tools.md
+- Changes in scripts/install_remote_keyboard_server.py
+- Changes in scripts/install_remote_keyboard_server_fixed.sh
+- Changes in scripts/ssh_connect.py
+- Changes in scripts/ssh_connect_wrapper.sh
+
+### Changed
+- Changes in examples/remote_keyboard_control.py
+- Changes in scripts/install_remote_keyboard_server.sh
+
 ## [0.1.9] - 2025-04-30
 
 ### Added

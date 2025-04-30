@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Remote Keyboard Control Example
+Remote Keyboard Control Example (Fixed Version)
 
 This script demonstrates how to control a keyboard on a remote Raspberry Pi device
 using connection details from a .env file.
+
+This fixed version ensures that keyboard commands are only sent to the remote server
+and not executed locally.
 """
 
 import asyncio
@@ -203,18 +206,43 @@ async def main():
     parser.add_argument('--text', help='Text to type on the remote keyboard')
     parser.add_argument('--key', help='Key to press on the remote keyboard')
     parser.add_argument('--hotkey', help='Hotkey to press (comma-separated keys, e.g., ctrl,s)')
+    parser.add_argument('--check-connection', action='store_true', help='Check connection to the remote server')
     
     args = parser.parse_args()
     
+    # Create the client
     example = RemoteKeyboardControlExample(
         server_host=args.host,
         server_port=args.port,
         debug=args.debug
     )
     
+    # Check connection if requested
+    if args.check_connection:
+        try:
+            print(f"Checking connection to {args.host}:{args.port}...")
+            # Try to list devices to check connection
+            devices = await example.client.list_devices()
+            print(f"Connection successful! Found {len(devices)} devices.")
+            return
+        except Exception as e:
+            print(f"Connection failed: {e}")
+            print("\nTroubleshooting tips:")
+            print("1. Make sure the Raspberry Pi is powered on and connected to the network")
+            print("2. Verify that the UnitAPI server is running on the Raspberry Pi")
+            print("3. Check that the IP address and port are correct")
+            print("4. Ensure there are no firewalls blocking the connection")
+            print("\nYou can try to SSH into the Raspberry Pi to check its status:")
+            print(f"  python scripts/ssh_connect_wrapper.sh {rpi_user}@{rpi_host} {rpi_password}")
+            return
+    
     if args.list:
         # List available remote keyboards
-        await example.list_remote_keyboards()
+        keyboards = await example.list_remote_keyboards()
+        if not keyboards:
+            print("\nNo keyboards found on the remote device.")
+            print("Make sure the keyboard server is running on the Raspberry Pi:")
+            print(f"  python scripts/ssh_connect_wrapper.sh {rpi_user}@{rpi_host} {rpi_password} -c 'systemctl status unitapi-keyboard.service'")
     elif args.device_id:
         if args.text:
             # Type text
@@ -283,11 +311,21 @@ async def main():
             print("Demo sequence completed!")
         else:
             print("No remote keyboards available. Make sure the UnitAPI server is running on the Raspberry Pi.")
-            print("You can start the device discovery service first with: python examples/device_discovery.py")
+            print("You can check the server status with:")
+            print(f"  python scripts/ssh_connect_wrapper.sh {rpi_user}@{rpi_host} {rpi_password} -c 'systemctl status unitapi-keyboard.service'")
+            print("\nIf the service is not running, you can start it with:")
+            print(f"  python scripts/ssh_connect_wrapper.sh {rpi_user}@{rpi_host} {rpi_password} -c 'sudo systemctl start unitapi-keyboard.service'")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
-
-# scripts/install_remote_keyboard_server.sh
-# python examples/remote_keyboard_control.py --list
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nOperation cancelled by user")
+    except Exception as e:
+        print(f"\nError: {e}")
+        print("\nTroubleshooting tips:")
+        print("1. Check your network connection")
+        print("2. Verify that the Raspberry Pi is powered on and connected to the network")
+        print("3. Make sure the UnitAPI server is running on the Raspberry Pi")
+        print("4. Check the .env file for correct connection details")

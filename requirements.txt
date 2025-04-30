@@ -54,6 +54,7 @@ passlib[bcrypt]>=1.7.4
 cryptography>=42.0.0
 python-jose[cryptography]>=3.3.0
 certbot>=2.9.0
+paramiko>=3.3.1
 
 # Optional dependencies (uncommented based on needs)
 # tensorflow>=2.9.0
