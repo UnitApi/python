@@ -3,7 +3,7 @@
 Raspberry Pi GPIO Server Example
 
 This script demonstrates how to create a UnitAPI server that exposes GPIO functionality
-on a Raspberry Pi. This server can be used with the gpio_control.py client example.
+on a Raspberry Pi. This server can be used with the gpio_client.py client example.
 """
 
 import asyncio

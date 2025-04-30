@@ -12,7 +12,7 @@ import logging
 import time
 import os
 import base64
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from unitapi.core.client import UnitAPIClient
 

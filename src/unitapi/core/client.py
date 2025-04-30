@@ -36,6 +36,26 @@ class UnitAPIClient:
         """
         # In a real implementation, this would use websockets or HTTP
         # For now, we'll just return a mock response for testing
+        
+        # If the command is list_devices, return a mock list of devices
+        if command.get("action") == "list_devices":
+            return {
+                "status": "success",
+                "devices": [
+                    {
+                        "device_id": "speaker_rpi",
+                        "name": "Raspberry Pi Speaker",
+                        "type": "speaker",
+                        "metadata": {
+                            "speaker_type": "raspberry_pi",
+                            "virtual": True,
+                            "sample_rate": 44100,
+                            "channels": 2
+                        }
+                    }
+                ]
+            }
+        
         return {"status": "success", "data": {"message": "Command processed"}}
 
     async def list_devices(self, device_type=None):
@@ -89,7 +109,7 @@ class UnitAPIClient:
         }
         return await self.send_command(command)
 
-    def execute_command(
+    async def execute_command(
         self, device_id: str, command: str, params: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
@@ -108,38 +128,76 @@ class UnitAPIClient:
         # In a real implementation, this would send the command to the server
         # For now, we'll return mock responses based on the command
 
-        if command == "status":
-            # Simulate device status response
-            if "thermostat" in device_id:
+        if device_id == "speaker_rpi":
+            # Handle speaker commands
+            if command == "play_audio":
+                # Simulate audio playback
+                playback_id = f"play_{asyncio.get_event_loop().time()}"
+                return {
+                    "status": "success",
+                    "playback_id": playback_id,
+                    "start_time": asyncio.get_event_loop().time(),
+                    "audio_file": params.get("audio_file", ""),
+                }
+            elif command == "stop_playback":
+                # Simulate stopping playback
+                return {
+                    "status": "success",
+                    "playback_id": params.get("playback_id", ""),
+                    "duration": 1.5,  # Mock duration
+                }
+            elif command == "set_volume":
+                # Simulate setting volume
+                return {
+                    "status": "success",
+                    "volume": params.get("volume", 0.8),
+                }
+            elif command == "get_volume":
+                # Simulate getting volume
+                return {
+                    "status": "success",
+                    "volume": 0.8,  # Mock volume
+                }
+            else:
+                # Generic speaker command response
+                return {
+                    "status": "success",
+                    "message": f"Command '{command}' executed on {device_id}",
+                    "params": params or {},
+                }
+        elif "thermostat" in device_id:
+            # Simulate thermostat response
+            if command == "status":
                 return {
                     "status": "online",
                     "temperature": 22.5,
                     "target": 23.0,
                     "mode": "heat",
                 }
-            elif "light" in device_id:
+            elif command == "set_temperature":
+                # Simulate thermostat temperature setting
+                temperature = params.get("temperature", 22)
+                return {
+                    "status": "success",
+                    "message": f"Temperature set to {temperature}°C",
+                    "temperature": temperature,
+                }
+            else:
+                return {"status": "success", "message": "Command executed"}
+        elif "light" in device_id:
+            # Simulate light response
+            if command == "status":
                 return {
                     "status": "online",
                     "power": "on",
                     "brightness": 80,
                     "color": "warm_white",
                 }
+            elif command == "toggle":
+                # Simulate light toggling
+                return {"status": "success", "power": "on", "message": "Device toggled"}
             else:
-                return {"status": "online", "message": "Device is operational"}
-
-        elif command == "set_temperature":
-            # Simulate thermostat temperature setting
-            temperature = params.get("temperature", 22)
-            return {
-                "status": "success",
-                "message": f"Temperature set to {temperature}°C",
-                "temperature": temperature,
-            }
-
-        elif command == "toggle":
-            # Simulate light toggling
-            return {"status": "success", "power": "on", "message": "Device toggled"}
-
+                return {"status": "success", "message": "Command executed"}
         else:
             # Generic command response
             return {

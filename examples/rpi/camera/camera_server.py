@@ -3,7 +3,7 @@
 Raspberry Pi Camera Server Example
 
 This script demonstrates how to create a UnitAPI server that exposes the Raspberry Pi
-Camera Module functionality. This server can be used with the camera_module.py client example.
+Camera Module functionality. This server can be used with the camera_client.py client example.
 """
 
 import asyncio

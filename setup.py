@@ -31,7 +31,7 @@ setup(
     author_email="info@softreck.dev",
     maintainer="unitapi developers",
     maintainer_email="info@softreck.dev",
-    python_requires=">=3.11",
+    python_requires=">=3.7.3",
     url="https://unitapi.unitapi.com",
     install_requires=[
         # Core dependencies
@@ -110,7 +110,7 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.7.3',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
         'Topic :: Multimedia :: Video',
