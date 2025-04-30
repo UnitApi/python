@@ -75,9 +75,9 @@ async def test_list_devices():
         mock_send.assert_called_once()
 
         # Check response
-        assert result["status"] == "success"
-        assert len(result["devices"]) == 1
-        assert result["devices"][0]["device_id"] == "test_device_01"
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]["device_id"] == "test_device_01"
 
 
 @pytest.mark.asyncio

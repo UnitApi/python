@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  speaker-server:
+    build:
+      context: ./speaker-server
+    container_name: unitapi-speaker-server
+    ports:
+      - "7890:7890"  # UnitAPI server port
+      - "8765:8765"  # WebSocket server port
+      - "22:22"      # SSH port
+    volumes:
+      - ./speaker-server/data:/data
+    environment:
+      - VIRTUAL_SPEAKERS=2
+    restart: unless-stopped
+    networks:
+      unitapi-network:
+        ipv4_address: 172.28.1.2
+
+  speaker-client:
+    build:
+      context: ./speaker-client
+    container_name: unitapi-speaker-client
+    depends_on:
+      - speaker-server
+    volumes:
+      - ./speaker-client/data:/data
+    environment:
+      - SERVER_HOST=172.28.1.2
+      - SERVER_PORT=7890
+    networks:
+      unitapi-network:
+        ipv4_address: 172.28.1.3
+    tty: true
+    stdin_open: true
+
+networks:
+  unitapi-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

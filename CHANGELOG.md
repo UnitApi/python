@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2025-04-30
+
+### Added
+- Changes in examples/docker/docker-compose.yml
+- Changes in scripts/REMOTE_SPEAKER_AGENT.md
+- Changes in scripts/install_remote_speaker_agent.sh
+- Changes in scripts/install_remote_speaker_agent_via_ssh.sh
+- Changes in scripts/test_speaker_agent.sh
+
 ## [0.1.3] - 2025-04-30
 
 ### Added
