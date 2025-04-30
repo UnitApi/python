@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2025-04-30
+
+### Added
+- Changes in docs/index.md
+- Changes in docs/installation.md
+- Changes in docs/usage.md
+- Changes in examples/device_discovery.py
+- Changes in examples/remote_control.py
+- Changes in examples/speaker_client.py
+- Changes in examples/speaker_server.py
+- Changes in examples/stream_processing.py
+- Changes in src.md
+- Changes in src/unitapi/core/__init__.py
+- Changes in src/unitapi/core/client.py
+- Changes in src/unitapi/core/server.py
+- Changes in src/unitapi/devices/__init__.py
+- Changes in src/unitapi/devices/base.py
+- Changes in src/unitapi/devices/camera.py
+- Changes in src/unitapi/devices/gpio.py
+- Changes in src/unitapi/devices/microphone.py
+- Changes in src/unitapi/devices/remote_speaker_device.py
+- Changes in src/unitapi/devices/remote_speaker_service.py
+- Changes in src/unitapi/protocols/__init__.py
+- Changes in src/unitapi/protocols/base.py
+- Changes in src/unitapi/protocols/mqtt.py
+- Changes in src/unitapi/protocols/websocket.py
+- Changes in src/unitapi/security/__init__.py
+- Changes in src/unitapi/security/access_control.py
+- Changes in src/unitapi/security/authentication.py
+- Changes in src/unitapi/security/encryption.py
+- Changes in tests/__init__.py
+- Changes in tests/test_client.py
+- Changes in tests/test_devices.py
+- Changes in tests/test_server.py
+
 ## [0.1.1] - 2025-04-30
 
 ### Added
