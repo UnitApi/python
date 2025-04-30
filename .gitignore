@@ -1,5 +1,13 @@
 .idea
 .env
+.wav
+*.wav
+.mp3
+*.mp3
+.mp4
+*.mp4
+.jpg
+*.jpg
 storage
 test_storage
 pyproject.toml.bak
