@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.12] - 2025-04-30
+
+### Added
+- Changes in examples/rpi/README.md
+- Changes in examples/rpi/camera_server.py
+- Changes in examples/rpi/gpio_server.py
+
+### Fixed
+- Changes in examples/rpi/led_control.py
+
 ## [0.1.11] - 2025-04-30
 
 ### Added
