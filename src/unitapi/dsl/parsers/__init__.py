@@ -10,8 +10,8 @@ from .starlark_parser import StarlarkParser
 from .simple_parser import SimpleDSLParser
 
 __all__ = [
-    'YAMLParser',
-    'HCLParser',
-    'StarlarkParser',
-    'SimpleDSLParser',
+    "YAMLParser",
+    "HCLParser",
+    "StarlarkParser",
+    "SimpleDSLParser",
 ]

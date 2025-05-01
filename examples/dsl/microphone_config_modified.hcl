@@ -23,7 +23,7 @@ extension "visualization" {
   config {
     enabled = true
     display_mode = "spectrum"
-    colors = ['red', 'green', 'blue']
+    colors = ["red", "green", "blue"]
   }
 }
 

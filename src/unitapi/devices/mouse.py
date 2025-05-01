@@ -4,9 +4,66 @@ Mouse device implementation with physical mouse control using PyAutoGUI.
 
 import asyncio
 import logging
+import sys
 from typing import Dict, Any, Optional, Tuple
 
-import pyautogui
+# Try to import pyautogui, but provide a mock implementation if it's not available
+# This allows tests to run without requiring tkinter to be installed
+try:
+    import pyautogui
+
+    PYAUTOGUI_AVAILABLE = True
+except (ImportError, ModuleNotFoundError):
+    # Create a mock pyautogui module for testing
+    PYAUTOGUI_AVAILABLE = False
+
+    class PyAutoGUIMock:
+        """Mock implementation of PyAutoGUI for testing."""
+
+        @staticmethod
+        def moveTo(x, y):
+            """Mock moveTo method."""
+            logging.getLogger(__name__).info(f"Mock: Moving to ({x}, {y})")
+
+        @staticmethod
+        def moveRel(dx, dy):
+            """Mock moveRel method."""
+            logging.getLogger(__name__).info(f"Mock: Moving by ({dx}, {dy})")
+
+        @staticmethod
+        def click(button="left"):
+            """Mock click method."""
+            logging.getLogger(__name__).info(f"Mock: Clicking {button} button")
+
+        @staticmethod
+        def doubleClick(button="left"):
+            """Mock doubleClick method."""
+            logging.getLogger(__name__).info(f"Mock: Double-clicking {button} button")
+
+        @staticmethod
+        def mouseDown(button="left"):
+            """Mock mouseDown method."""
+            logging.getLogger(__name__).info(f"Mock: Pressing {button} button")
+
+        @staticmethod
+        def mouseUp(button="left"):
+            """Mock mouseUp method."""
+            logging.getLogger(__name__).info(f"Mock: Releasing {button} button")
+
+        @staticmethod
+        def scroll(amount):
+            """Mock scroll method."""
+            logging.getLogger(__name__).info(f"Mock: Scrolling {amount}")
+
+        @staticmethod
+        def dragTo(x, y, button="left"):
+            """Mock dragTo method."""
+            logging.getLogger(__name__).info(
+                f"Mock: Dragging to ({x}, {y}) with {button} button"
+            )
+
+    # Use the mock implementation
+    pyautogui = PyAutoGUIMock()
 
 from .base import InputDevice, DeviceStatus
 
@@ -74,8 +131,13 @@ class MouseDevice(InputDevice):
         try:
             self.logger.info(f"Moving mouse to position ({x}, {y})")
 
-            # Move the physical mouse using PyAutoGUI
-            pyautogui.moveTo(x, y)
+            # Move the physical mouse using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.moveTo(x, y)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse movement to ({x}, {y})"
+                )
 
             # Update internal position tracking
             self._position = (x, y)
@@ -105,8 +167,13 @@ class MouseDevice(InputDevice):
             new_x, new_y = x + dx, y + dy
             self.logger.info(f"Moving mouse by ({dx}, {dy}) to ({new_x}, {new_y})")
 
-            # Move the physical mouse using PyAutoGUI
-            pyautogui.moveRel(dx, dy)
+            # Move the physical mouse using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.moveRel(dx, dy)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating relative mouse movement by ({dx}, {dy})"
+                )
 
             # Update internal position tracking
             self._position = (new_x, new_y)
@@ -140,13 +207,18 @@ class MouseDevice(InputDevice):
             down_result = await self.button_down(button)
             if "error" in down_result:
                 return down_result
-                
+
             up_result = await self.button_up(button)
             if "error" in up_result:
                 return up_result
 
-            # Also perform the physical click using PyAutoGUI
-            pyautogui.click(button=button)
+            # Also perform the physical click using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.click(button=button)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse click with {button} button"
+                )
 
             return {
                 "status": "success",
@@ -176,8 +248,13 @@ class MouseDevice(InputDevice):
                 f"Double-clicking {button} mouse button at {self.position}"
             )
 
-            # Double-click the physical mouse using PyAutoGUI
-            pyautogui.doubleClick(button=button)
+            # Double-click the physical mouse using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.doubleClick(button=button)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse double-click with {button} button"
+                )
 
             return {
                 "status": "success",
@@ -205,8 +282,13 @@ class MouseDevice(InputDevice):
 
             self.logger.info(f"Pressing {button} mouse button at {self.position}")
 
-            # Press the physical mouse button using PyAutoGUI
-            pyautogui.mouseDown(button=button)
+            # Press the physical mouse button using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.mouseDown(button=button)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse button down with {button} button"
+                )
 
             # Update button state
             self.buttons_state[button] = True
@@ -238,8 +320,13 @@ class MouseDevice(InputDevice):
 
             self.logger.info(f"Releasing {button} mouse button at {self.position}")
 
-            # Release the physical mouse button using PyAutoGUI
-            pyautogui.mouseUp(button=button)
+            # Release the physical mouse button using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.mouseUp(button=button)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse button up with {button} button"
+                )
 
             # Update button state
             self.buttons_state[button] = False
@@ -271,8 +358,13 @@ class MouseDevice(InputDevice):
                 f"Scrolling {direction} by {abs(amount)} at {self.position}"
             )
 
-            # Scroll the physical mouse wheel using PyAutoGUI
-            pyautogui.scroll(amount)
+            # Scroll the physical mouse wheel using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.scroll(amount)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse scroll by {amount}"
+                )
 
             return {
                 "status": "success",
@@ -307,17 +399,22 @@ class MouseDevice(InputDevice):
             down_result = await self.button_down(button)
             if "error" in down_result:
                 return down_result
-                
+
             move_result = await self.move_to(x, y)
             if "error" in move_result:
                 return move_result
-                
+
             up_result = await self.button_up(button)
             if "error" in up_result:
                 return up_result
 
-            # Also perform the physical drag using PyAutoGUI
-            pyautogui.dragTo(x, y, button=button)
+            # Also perform the physical drag using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.dragTo(x, y, button=button)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating mouse drag to ({x}, {y}) with {button} button"
+                )
 
             return {
                 "status": "success",

@@ -8,6 +8,6 @@ from .local_devices import LocalDevicesManager
 from .network_devices import NetworkDevicesManager
 
 __all__ = [
-    'LocalDevicesManager',
-    'NetworkDevicesManager',
+    "LocalDevicesManager",
+    "NetworkDevicesManager",
 ]

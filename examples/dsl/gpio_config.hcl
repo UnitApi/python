@@ -198,7 +198,7 @@ pipeline "home-automation" {
   step "automation" {
     rules = [
       {
-        condition = "motion_sensor == LOW && time_between('18:00', '07:00')"
+        condition = "motion_sensor == LOW && time_between(\"18:00\", \"07:00\")"
         actions = [
           { target = "light_relay", value = "HIGH", duration = 300 }  # 5 minutes
         ]

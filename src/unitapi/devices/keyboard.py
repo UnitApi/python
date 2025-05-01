@@ -126,7 +126,7 @@ class KeyboardDevice(InputDevice):
             down_result = await self.key_down(key)
             if "error" in down_result:
                 return down_result
-                
+
             up_result = await self.key_up(key)
             if "error" in up_result:
                 return up_result
@@ -194,7 +194,7 @@ class KeyboardDevice(InputDevice):
                 down_result = await self.key_down(key)
                 if "error" in down_result:
                     # If there's an error, try to release any keys that were pressed
-                    for k in reversed(key_list[:key_list.index(key)]):
+                    for k in reversed(key_list[: key_list.index(key)]):
                         await self.key_up(k)
                     return down_result
 

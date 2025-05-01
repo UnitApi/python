@@ -166,18 +166,19 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="unitapi - Real-Time Annotation and Stream Processing"
     )
-    
+
     # Główne argumenty
     parser.add_argument("-c", "--config", help="Ścieżka do pliku konfiguracyjnego")
-    
+
     # Subkomendy
     subparsers = parser.add_subparsers(dest="command", help="Dostępne komendy")
-    
+
     # Subkomenda DSL
     dsl_parser = subparsers.add_parser("dsl", help="Komendy DSL")
     dsl_parser.add_argument("dsl_args", nargs="*", help="Argumenty dla komend DSL")
-    
+
     return parser.parse_args()
+
 
 def main():
     """
@@ -185,15 +186,16 @@ def main():
     """
     # Parsowanie argumentów
     args = parse_args()
-    
+
     # Obsługa komend DSL
     if args.command == "dsl":
         # Przekazanie argumentów do CLI DSL
         import sys
+
         sys.argv = [sys.argv[0]] + args.dsl_args
         dsl_cli()
         return
-    
+
     # Uruchomienie systemu
     app = unitapi(config_path=args.config)
     app.run()
