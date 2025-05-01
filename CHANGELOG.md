@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.24] - 2025-05-01
+
+### Added
+- Changes in examples/pc/misc/examples.md
+- Changes in remove_duplicated_files.sh
+
 ## [0.1.23] - 2025-05-01
 
 ### Added
