@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.20] - 2025-05-01
+
+### Added
+- Changes in docs/tree.md
+
 ## [0.1.19] - 2025-05-01
 
 ### Added

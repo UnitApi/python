@@ -28,6 +28,7 @@ examples/rpi/README.md
 examples/rpi/respeaker/README.md
 examples/rpi/speaker/README.md
 examples/speaker_playback_fix.md
+docs/tree.md
 docs/footer.md
 # find examples/ -type f -name "*.md" | sort >> flatedit.txt
 # find docs/ -type f -name "*.md" | sort >> flatedit.txt

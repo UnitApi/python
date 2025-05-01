@@ -6115,6 +6115,171 @@ python examples/speaker_audio_playback_fixed.py --all-devices --debug
 - If you're still having issues with the WebSocket connection, make sure the device discovery service is running and check if the WebSocket server is listening on the expected port (7891 by default).
 - The local playback option (`--local` for `speaker_playback_fixed.py` or direct device specification for `speaker_audio_playback_fixed.py`) works independently of the device discovery service.
 
+```bash [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/tree.md)
+tree -L 4 src
+```
+      
+```bash
+src
+├── unitapi
+│   ├── core
+│   │   ├── client_fixed.py
+│   │   ├── client.py
+│   │   ├── __init__.py
+│   │   └── server.py
+│   ├── devices
+│   │   ├── base.py
+│   │   ├── camera.py
+│   │   ├── gamepad.py
+│   │   ├── gpio.py
+│   │   ├── __init__.py
+│   │   ├── keyboard.py
+│   │   ├── microphone.py
+│   │   ├── mouse.py
+│   │   ├── remote_speaker_device.py
+│   │   ├── remote_speaker_service.py
+│   │   └── touchscreen.py
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── main.py
+│   ├── protocols
+│   │   ├── base.py
+│   │   ├── __init__.py
+│   │   ├── mqtt.py
+│   │   └── websocket.py
+│   ├── security
+│   │   ├── access_control.py
+│   │   ├── authentication.py
+│   │   ├── encryption.py
+│   │   ├── __init__.py
+│   ├── _version.py
+│   └── _version.py.bak
+└── __init__.py
+```
+
+```bash
+tree -L 4 examples
+```
+
+```bash
+src
+examples
+├── camera_capture.py
+├── camera_frame_capture.py
+├── device_discovery.py
+├── docker
+│   ├── docker-compose.yml
+│   ├── README.md
+│   ├── speaker-client
+│   │   ├── client.py
+│   │   ├── data
+│   │   ├── Dockerfile
+│   │   └── entrypoint.sh
+│   └── speaker-server
+│       ├── data
+│       ├── Dockerfile
+│       ├── entrypoint.sh
+│       └── virtual_speaker.py
+├── examples.md
+├── input_devices.py
+├── keyboard_text_input.py
+├── microphone_audio_input.py
+├── microphone_recording.py
+├── mouse_movement.py
+├── mouse_movement_pyautogui.py
+├── pc
+│   ├── camera
+│   │   ├── camera_client.py
+│   │   ├── camera_frame_client.py
+│   │   ├── camera_server.py
+│   │   ├── README.md
+│   │   ├── remote_camera_client.py
+│   │   ├── remote_camera_frame_client.py
+│   │   └── screenshot_client.py
+│   ├── keyboard
+│   │   ├── keyboard_client.py
+│   │   ├── keyboard_server.py
+│   │   ├── README.md
+│   │   └── remote_keyboard_client.py
+│   ├── microphone
+│   │   ├── microphone_input_client.py
+│   │   ├── microphone_recording_client.py
+│   │   ├── microphone_server.py
+│   │   └── README.md
+│   ├── misc
+│   │   ├── device_discovery.py
+│   │   ├── input_devices.py
+│   │   ├── README.md
+│   │   └── ssh_connector.py
+│   ├── mouse
+│   │   ├── mouse_client.py
+│   │   ├── mouse_pyautogui_client.py
+│   │   ├── mouse_server.py
+│   │   └── README.md
+│   ├── README.md
+│   └── speaker
+│       ├── README.md
+│       ├── speaker_audio_playback_fixed.py
+│       ├── speaker_audio_playback.py
+│       ├── speaker_client.py
+│       ├── speaker_playback_fixed.py
+│       ├── speaker_playback.py
+│       └── speaker_server.py
+├── README_remote_keyboard_fixed.md
+├── README_remote_keyboard.md
+├── remote_camera_capture.py
+├── remote_camera_frame_capture.py
+├── remote_control.py
+├── remote_keyboard_control_fixed.py
+├── remote_keyboard_control.md
+├── remote_keyboard_control.py
+├── remote_keyboard_server_installation.md
+├── remote_keyboard_server.py
+├── remote_speaker_agent.md
+├── rpi
+│   ├── camera
+│   │   ├── camera_client.py
+│   │   ├── camera_server.py
+│   │   └── README.md
+│   ├── gpio
+│   │   ├── gpio_client.py
+│   │   ├── gpio_server.py
+│   │   ├── led_control.py
+│   │   ├── README.md
+│   │   └── sensors.py
+│   ├── keyboard
+│   │   ├── keyboard_client.py
+│   │   ├── keyboard_server.py
+│   │   └── README.md
+│   ├── mic
+│   │   ├── microphone_client.py
+│   │   ├── microphone_server.py
+│   │   └── README.md
+│   ├── mouse
+│   │   ├── mouse_client.py
+│   │   ├── mouse_server.py
+│   │   └── README.md
+│   ├── README.md
+│   ├── respeaker
+│   │   ├── README.md
+│   │   ├── respeaker_client.py
+│   │   └── respeaker_server.py
+│   └── speaker
+│       ├── README.md
+│       ├── speaker_client.py
+│       └── speaker_server.py
+├── speaker_audio_playback_fixed.py
+├── speaker_audio_playback.py
+├── speaker_client.py
+├── speaker_playback_fixed.py
+├── speaker_playback_fix.md
+├── speaker_playback.py
+├── speaker_server.py
+├── ssh_connector_example.py
+├── stream_processing.py
+└── take_screenshot.py
+```
+
  [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/footer.md)
 <script type="module">    
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
@@ -6190,6 +6355,7 @@ examples/rpi/README.md
 examples/rpi/respeaker/README.md
 examples/rpi/speaker/README.md
 examples/speaker_playback_fix.md
+docs/tree.md
 docs/footer.md
 # find examples/ -type f -name "*.md" | sort >> flatedit.txt
 # find docs/ -type f -name "*.md" | sort >> flatedit.txt
@@ -6254,6 +6420,7 @@ examples/rpi/README.md
 examples/rpi/respeaker/README.md
 examples/rpi/speaker/README.md
 examples/speaker_playback_fix.md
+docs/tree.md
 docs/footer.md
 # find examples/ -type f -name "*.md" | sort >> flatedit.txt
 # find docs/ -type f -name "*.md" | sort >> flatedit.txt

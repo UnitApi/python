@@ -29,6 +29,7 @@
 + [examples # Raspberry Pi ReSpeaker Examples for UnitAPI](http://github.com/examples)
 + [examples # Raspberry Pi Speaker Examples for UnitAPI](http://github.com/examples)
 + [examples # Speaker Playback Fix](http://github.com/examples)
++ [docs ```bash](http://github.com/docs)
 + [docs ](http://github.com/docs)
 + [# ](http://github.com/#)
 + [find ](http://github.com/find)
