@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.26] - 2025-05-01
+
+### Added
+- Changes in examples/dsl/test_hcl_config.py
+- Changes in examples/dsl/test_multi_format.py
+- Changes in examples/dsl/test_star_config.py
+- Changes in examples/dsl/test_ua_config.py
+- Changes in examples/dsl/test_yaml_config.py
+
 ## [0.1.25] - 2025-05-01
 
 ### Added

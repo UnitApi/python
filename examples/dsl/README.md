@@ -31,6 +31,56 @@ These examples demonstrate how to create workflows that connect multiple devices
 - `multi_device_workflow.star` - Complex multi-device workflow in Starlark format
 - `multi_device_simple.ua` - Multi-device workflow in Simple DSL format
 
+## Test Files
+
+This directory includes Python scripts to test and demonstrate the usage of different configuration formats:
+
+- `test_yaml_config.py` - Test script for YAML configuration files
+- `test_hcl_config.py` - Test script for HCL configuration files
+- `test_star_config.py` - Test script for Starlark configuration files
+- `test_ua_config.py` - Test script for Simple UA configuration files
+- `test_multi_format.py` - Test script that demonstrates combining multiple configuration formats
+
+### Running the Test Scripts
+
+Each test script can be run directly from the command line:
+
+```bash
+# Test a YAML configuration
+python test_yaml_config.py --config camera_config.yaml
+
+# Test an HCL configuration
+python test_hcl_config.py --config microphone_config.hcl
+
+# Test a Starlark configuration
+python test_star_config.py --config speaker_config.star
+
+# Test a Simple UA configuration
+python test_ua_config.py --config input_devices.ua
+
+# Test combining multiple formats
+python test_multi_format.py
+```
+
+### Command Line Options
+
+Each test script supports various command line options:
+
+- `--config` - Specify the configuration file to test (default varies by script)
+- `--dry-run` - Validate the configuration without executing it
+- `--convert-to` - Convert the configuration to another format (e.g., yaml, hcl, star, ua)
+
+Additional options for specific scripts:
+
+- `test_star_config.py` supports `--list-pipelines` to display all pipelines in the configuration
+- `test_ua_config.py` supports `--list-devices` to display all devices in the configuration
+- `test_multi_format.py` supports options to specify different configuration files for each component:
+  - `--base-config` - Base configuration file (default: camera_config.yaml)
+  - `--device-config` - Device configuration file (default: microphone_config.hcl)
+  - `--pipeline-config` - Pipeline configuration file (default: speaker_config.star)
+  - `--additional-config` - Additional configuration file (default: input_devices.ua)
+  - `--output-format` - Format for the combined configuration output
+
 ## Key Concepts
 
 ### Extensions
