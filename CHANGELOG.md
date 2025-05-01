@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.28] - 2025-05-01
+
+### Added
+- Changes in examples/dsl/microphone_config_modified.hcl
+- Changes in examples/dsl/test_config.hcl
+- Changes in examples/dsl/test_hcl_parser_example.py
+- Changes in examples/dsl/test_hcl_parser_simple_direct.py
+- Changes in tests/test_hcl_parser.py
+
+### Removed
+- Changes in src/unitapi/dsl/base_fixed.py
+- Changes in src/unitapi/dsl/parsers/hcl_parser_fixed.py
+
 ## [0.1.27] - 2025-05-01
 
 ### Added

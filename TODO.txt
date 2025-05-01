@@ -72,3 +72,14 @@ Dostarcz podsumowanie:
 
 
 - Implementacja bardziej zaawansowanego skanowania i wspoldzielenia zasobow
+
+
+
+
+przebuduj strukture w examples/dsl/
+kazdy format jako folder examples/dsl/* a w nim plik README.md z opisem i example.* test.py
+np.
+examples/dsl/ua
+examples/dsl/ua/example.ua
+examples/dsl/ua/test.py
+

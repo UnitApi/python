@@ -1,6 +1,6 @@
 from typing import Dict, Any, List, Optional
 from io import StringIO
-from ..base_fixed import Extension, Device, Pipeline, PipelineStep, IDSLParser
+from ..base import Extension, Device, Pipeline, PipelineStep, IDSLParser
 
 class HCLParser(IDSLParser):
     """HCL parser implementation for UnitAPI DSL"""
@@ -199,6 +199,9 @@ class HCLParser(IDSLParser):
                 for key, value in ext.config.items():
                     if isinstance(value, str):
                         lines.append(f'    {key} = "{value}"')
+                    elif isinstance(value, bool):
+                        # Convert Python's True/False to lowercase true/false for HCL
+                        lines.append(f'    {key} = {str(value).lower()}')
                     else:
                         lines.append(f'    {key} = {value}')
                 lines.append('  }')
@@ -220,6 +223,9 @@ class HCLParser(IDSLParser):
                 for key, value in device.metadata.items():
                     if isinstance(value, str):
                         lines.append(f'    {key} = "{value}"')
+                    elif isinstance(value, bool):
+                        # Convert Python's True/False to lowercase true/false for HCL
+                        lines.append(f'    {key} = {str(value).lower()}')
                     else:
                         lines.append(f'    {key} = {value}')
                 lines.append('  }')
@@ -244,8 +250,21 @@ class HCLParser(IDSLParser):
                     if isinstance(value, str):
                         lines.append(f'    {key} = "{value}"')
                     elif isinstance(value, list):
-                        values_str = ', '.join([f'"{v}"' if isinstance(v, str) else str(v) for v in value])
+                        values = []
+                        for v in value:
+                            if isinstance(v, str):
+                                # Ensure strings are properly quoted with double quotes
+                                values.append(f'"{v}"')
+                            elif isinstance(v, bool):
+                                # Convert Python's True/False to lowercase true/false for HCL
+                                values.append(str(v).lower())
+                            else:
+                                values.append(str(v))
+                        values_str = ', '.join(values)
                         lines.append(f'    {key} = [{values_str}]')
+                    elif isinstance(value, bool):
+                        # Convert Python's True/False to lowercase true/false for HCL
+                        lines.append(f'    {key} = {str(value).lower()}')
                     else:
                         lines.append(f'    {key} = {value}')
                 
