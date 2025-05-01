@@ -10,31 +10,51 @@ from typing import Dict, Any, Optional, List, Set
 # Check if we should skip tkinter-dependent functionality
 SKIP_TKINTER = os.environ.get("UNITAPI_SKIP_TKINTER_TESTS", "0") == "1"
 
+# Try to import pyautogui, but provide a mock implementation if it's not available
+# This allows tests to run without requiring tkinter to be installed
 try:
     import pyautogui
-except ImportError as e:
-    if SKIP_TKINTER:
-        # Create a mock pyautogui module for testing when tkinter is not available
-        class MockPyAutoGUI:
-            def keyDown(self, *args, **kwargs):
-                pass
 
-            def keyUp(self, *args, **kwargs):
-                pass
+    PYAUTOGUI_AVAILABLE = True
+except (ImportError, ModuleNotFoundError, SystemExit) as e:
+    # Create a mock pyautogui module for testing
+    # SystemExit is caught here because mouseinfo (imported by pyautogui)
+    # calls sys.exit() when tkinter is not available
+    PYAUTOGUI_AVAILABLE = False
 
-            def press(self, *args, **kwargs):
-                pass
+    if not SKIP_TKINTER:
+        logging.getLogger(__name__).warning(f"PyAutoGUI import failed: {e}")
 
-            def write(self, *args, **kwargs):
-                pass
+    class MockPyAutoGUI:
+        """Mock implementation of PyAutoGUI for testing."""
 
-            def hotkey(self, *args, **kwargs):
-                pass
+        @staticmethod
+        def keyDown(key):
+            """Mock keyDown method."""
+            logging.getLogger(__name__).info(f"Mock: Pressing key {key}")
 
-        pyautogui = MockPyAutoGUI()
-    else:
-        # Re-raise the import error if we're not in test mode
-        raise e
+        @staticmethod
+        def keyUp(key):
+            """Mock keyUp method."""
+            logging.getLogger(__name__).info(f"Mock: Releasing key {key}")
+
+        @staticmethod
+        def press(key):
+            """Mock press method."""
+            logging.getLogger(__name__).info(f"Mock: Pressing and releasing key {key}")
+
+        @staticmethod
+        def write(text):
+            """Mock write method."""
+            logging.getLogger(__name__).info(f"Mock: Typing text '{text}'")
+
+        @staticmethod
+        def hotkey(*keys):
+            """Mock hotkey method."""
+            logging.getLogger(__name__).info(f"Mock: Pressing hotkey {'+'.join(keys)}")
+
+    # Use the mock implementation
+    pyautogui = MockPyAutoGUI()
 
 from .base import InputDevice, DeviceStatus
 
@@ -83,8 +103,13 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Pressing key: {key}")
 
-            # Press the physical key using PyAutoGUI
-            pyautogui.keyDown(key)
+            # Press the physical key using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.keyDown(key)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating key down for {key}"
+                )
 
             # Handle modifier keys
             if key.lower() in self.modifiers:
@@ -116,8 +141,13 @@ class KeyboardDevice(InputDevice):
         try:
             self.logger.info(f"Releasing key: {key}")
 
-            # Release the physical key using PyAutoGUI
-            pyautogui.keyUp(key)
+            # Release the physical key using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.keyUp(key)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating key up for {key}"
+                )
 
             # Handle modifier keys
             if key.lower() in self.modifiers:
@@ -159,8 +189,13 @@ class KeyboardDevice(InputDevice):
             if "error" in up_result:
                 return up_result
 
-            # Also perform the physical key press using PyAutoGUI
-            pyautogui.press(key)
+            # Also perform the physical key press using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.press(key)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating key press for {key}"
+                )
 
             return {
                 "status": "success",
@@ -190,8 +225,13 @@ class KeyboardDevice(InputDevice):
                 if "error" in result:
                     return result
 
-            # Also type the text using PyAutoGUI for physical keyboard
-            pyautogui.write(text)
+            # Also type the text using PyAutoGUI for physical keyboard if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.write(text)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating typing text '{text}'"
+                )
 
             return {
                 "status": "success",
@@ -232,8 +272,13 @@ class KeyboardDevice(InputDevice):
                 if "error" in up_result:
                     return up_result
 
-            # Also perform the physical hotkey press using PyAutoGUI
-            pyautogui.hotkey(*key_list)
+            # Also perform the physical hotkey press using PyAutoGUI if available
+            if PYAUTOGUI_AVAILABLE:
+                pyautogui.hotkey(*key_list)
+            else:
+                self.logger.info(
+                    f"PyAutoGUI not available, simulating hotkey press {'+'.join(key_list)}"
+                )
 
             return {
                 "status": "success",
@@ -259,17 +304,23 @@ class KeyboardDevice(InputDevice):
 
             # Release all keys
             for key in keys_to_release:
-                pyautogui.keyUp(key)
+                if PYAUTOGUI_AVAILABLE:
+                    pyautogui.keyUp(key)
+                else:
+                    self.logger.info(
+                        f"PyAutoGUI not available, simulating key up for {key}"
+                    )
                 self.pressed_keys.remove(key)
 
             # Reset modifiers
             for mod in self.modifiers:
                 self.modifiers[mod] = False
-                # Make sure modifier keys are released
-                try:
-                    pyautogui.keyUp(mod)
-                except Exception:
-                    pass
+                # Make sure modifier keys are released if PyAutoGUI is available
+                if PYAUTOGUI_AVAILABLE:
+                    try:
+                        pyautogui.keyUp(mod)
+                    except Exception:
+                        pass
 
             return {
                 "status": "success",
