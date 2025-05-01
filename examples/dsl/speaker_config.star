@@ -43,8 +43,16 @@ rpi_speaker = device(
 )
 
 # Define pipelines
+# Define a music source device
+music_source = device(
+    id = "music-source",
+    type = "custom",
+    capabilities = ["storage", "streaming"]
+)
+
 music_playback = pipeline(
     name = "music-playback",
+    source = music_source.id,
     target = living_room_speaker.id,
     steps = [
         step("load", source="/music/playlist.m3u"),

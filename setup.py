@@ -62,7 +62,7 @@ setup(
         "opencv-python>=4.6.0",
         "numpy>=1.22.3",
         "Pillow>=9.1.0",
-        "pyaudio>=0.2.13",
+        # PyAudio is optional and requires system dependencies
         
         # Protocol support
         "grpcio>=1.62.0",
@@ -96,6 +96,12 @@ setup(
             # DSL format support
             "python-hcl2>=3.0.5",
             "starlark>=0.4.0",
+        ],
+        "audio": [
+            # Audio processing dependencies
+            "pyaudio>=0.2.13",
+            "sounddevice>=0.4.6",
+            "soundfile>=0.12.1",
         ],
     },
     project_urls={

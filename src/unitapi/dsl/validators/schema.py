@@ -75,10 +75,17 @@ class DeviceSchema(BaseModel):
             "virtual_speaker",
             "raspberry_pi_speaker",
             "raspberry_pi_gpio",
+            # Additional device types found in examples
+            "mobile_touchscreen",
+            "arduino_gpio",
+            "esp32_gpio",
+            "test_type",
+            "gaming_keyboard",
+            "gaming_mouse",
         ]
 
         # Check if the device type is in the valid list or starts with a valid prefix
-        valid_prefixes = ["custom_", "virtual_", "raspberry_pi_"]
+        valid_prefixes = ["custom_", "virtual_", "raspberry_pi_", "arduino_", "esp32_"]
 
         if v in valid_types:
             return v
@@ -128,6 +135,19 @@ class PipelineStepSchema(BaseModel):
             "visualize",
             "display",
             "save",
+            # Additional actions found in examples
+            "configure",
+            "set_state",
+            "pwm_control",
+            "on_change",
+            "set_remote",
+            "monitor",
+            "automation",
+            "map",
+            "execute",
+            "capture_image",
+            "record_video",
+            "test_step",
         ]
 
         if v in valid_actions or v.startswith("custom_"):

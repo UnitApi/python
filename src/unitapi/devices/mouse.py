@@ -11,10 +11,11 @@ from typing import Dict, Any, Optional, Tuple
 # This allows tests to run without requiring tkinter to be installed
 try:
     import pyautogui
-
     PYAUTOGUI_AVAILABLE = True
-except (ImportError, ModuleNotFoundError):
+except (ImportError, ModuleNotFoundError, SystemExit):
     # Create a mock pyautogui module for testing
+    # SystemExit is caught here because mouseinfo (imported by pyautogui)
+    # calls sys.exit() when tkinter is not available
     PYAUTOGUI_AVAILABLE = False
 
     class PyAutoGUIMock:
