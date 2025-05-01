@@ -45,7 +45,6 @@ tree -L 4 examples
 ```
 
 ```bash
-src
 examples
 ├── camera_capture.py
 ├── camera_frame_capture.py
@@ -76,14 +75,20 @@ examples
 │   │   ├── camera_frame_client.py
 │   │   ├── camera_server.py
 │   │   ├── README.md
+│   │   ├── remote_camera_capture.py
 │   │   ├── remote_camera_client.py
+│   │   ├── remote_camera_frame_capture.py
 │   │   ├── remote_camera_frame_client.py
 │   │   └── screenshot_client.py
 │   ├── keyboard
 │   │   ├── keyboard_client.py
 │   │   ├── keyboard_server.py
 │   │   ├── README.md
-│   │   └── remote_keyboard_client.py
+│   │   ├── README_remote_keyboard_fixed.md
+│   │   ├── README_remote_keyboard.md
+│   │   ├── remote_keyboard_client.py
+│   │   ├── remote_keyboard_control_fixed.py
+│   │   └── remote_keyboard_control.py
 │   ├── microphone
 │   │   ├── microphone_input_client.py
 │   │   ├── microphone_recording_client.py
@@ -93,6 +98,7 @@ examples
 │   │   ├── device_discovery.py
 │   │   ├── input_devices.py
 │   │   ├── README.md
+│   │   ├── remote_control.py
 │   │   └── ssh_connector.py
 │   ├── mouse
 │   │   ├── mouse_client.py
@@ -102,23 +108,13 @@ examples
 │   ├── README.md
 │   └── speaker
 │       ├── README.md
+│       ├── remote_speaker_agent.md
 │       ├── speaker_audio_playback_fixed.py
 │       ├── speaker_audio_playback.py
 │       ├── speaker_client.py
 │       ├── speaker_playback_fixed.py
 │       ├── speaker_playback.py
 │       └── speaker_server.py
-├── README_remote_keyboard_fixed.md
-├── README_remote_keyboard.md
-├── remote_camera_capture.py
-├── remote_camera_frame_capture.py
-├── remote_control.py
-├── remote_keyboard_control_fixed.py
-├── remote_keyboard_control.md
-├── remote_keyboard_control.py
-├── remote_keyboard_server_installation.md
-├── remote_keyboard_server.py
-├── remote_speaker_agent.md
 ├── rpi
 │   ├── camera
 │   │   ├── camera_client.py
@@ -133,7 +129,9 @@ examples
 │   ├── keyboard
 │   │   ├── keyboard_client.py
 │   │   ├── keyboard_server.py
-│   │   └── README.md
+│   │   ├── README.md
+│   │   ├── remote_keyboard_server_installation.md
+│   │   └── remote_keyboard_server.py
 │   ├── mic
 │   │   ├── microphone_client.py
 │   │   ├── microphone_server.py

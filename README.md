@@ -1032,321 +1032,8 @@ asyncio.run(main())
 6. **Metadata**: Use metadata to store device-specific configuration and capabilities.
 7. **Command Interface**: Implement a consistent command interface through the `execute_command` method.
 
-# UnitAPI Usage Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/usage.md)
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/footer.mddocs/device_types.md)
 
-## Basic Concepts
-
-UnitAPI provides a flexible framework for managing network-connected devices across different protocols and platforms.
-
-## Core Components
-
-- **Server**: Manages device registration and communication
-- **Client**: Interacts with the server to control devices
-- **Devices**: Represent different types of network peripherals
-- **Protocols**: Support for various communication methods
-
-## Quick Start
-
-### Starting a Server
-
-```python
-from unitapi.core.server import UnitAPIServer
-
-# Create a server instance
-server = UnitAPIServer(host='localhost', port=7890)
-
-# Register a device
-server.register_device(
-    device_id='temp_sensor_01', 
-    device_type='sensor',
-    metadata={
-        'location': 'living_room',
-        'capabilities': ['temperature', 'humidity']
-    }
-)
-
-# Start the server
-server.start()
-```
-
-### Client Interaction
-
-```python
-from unitapi.core.client import UnitAPIClient
-
-# Create a client
-client = UnitAPIClient(server_host='localhost', server_port=7890)
-
-# List available devices
-devices = client.list_devices()
-print("Available Devices:", devices)
-
-# List specific device type
-sensor_devices = client.list_devices(device_type='sensor')
-print("Sensor Devices:", sensor_devices)
-```
-
-## Device Types
-
-### Camera Devices
-
-```python
-from unitapi.devices.camera import CameraDevice
-import asyncio
-
-# Create a camera device
-camera = CameraDevice(
-    device_id='camera_01',
-    name='Main Camera',
-    metadata={
-        'resolution': '1080p',
-        'fps': 30,
-        'location': 'front_door'
-    }
-)
-
-# Connect to the camera
-await camera.connect()
-
-# Capture an image
-image_data = await camera.capture_image()
-print(f"Image captured: {image_data}")
-
-# Start a video stream
-stream_info = await camera.start_video_stream(duration=10)
-print(f"Stream started: {stream_info}")
-```
-
-### Microphone Devices
-
-```python
-from unitapi.devices.microphone import MicrophoneDevice
-import asyncio
-
-# Create a microphone device
-mic = MicrophoneDevice(
-    device_id='mic_01',
-    name='Desktop Microphone',
-    metadata={
-        'sample_rate': 44100,
-        'channels': 2,
-        'location': 'office'
-    }
-)
-
-# Connect to the microphone
-await mic.connect()
-
-# Record audio
-audio_data = await mic.record_audio(duration=5, sample_rate=44100)
-print(f"Audio recorded: {audio_data}")
-```
-
-### GPIO Devices
-
-```python
-from unitapi.devices.gpio import GPIODevice
-import asyncio
-
-# Create GPIO device
-gpio = GPIODevice(
-    device_id='rpi_gpio_01', 
-    name='Raspberry Pi GPIO',
-    metadata={'total_pins': 40}
-)
-
-# Connect to the GPIO device
-await gpio.connect()
-
-# Set pin mode and control
-await gpio.set_pin_mode(18, 'output')
-await gpio.digital_write(18, True)
-
-# Read from a pin
-await gpio.set_pin_mode(17, 'input')
-pin_value = await gpio.digital_read(17)
-print(f"Pin 17 value: {pin_value}")
-
-# PWM control
-await gpio.set_pin_mode(12, 'output')
-await gpio.pwm_write(12, 0.5)  # 50% duty cycle
-```
-
-## Device Discovery
-
-UnitAPI provides a comprehensive device discovery mechanism that can detect devices on the local network and on the local machine.
-
-```python
-from examples.device_discovery import DeviceDiscoveryService
-import asyncio
-
-# Create a discovery service
-discovery = DeviceDiscoveryService(
-    server_host='0.0.0.0',
-    server_port=7890,
-    discovery_port=7891,
-    debug=True
-)
-
-# Discover devices
-devices = await discovery.discover_devices()
-print(f"Discovered {len(devices)} devices")
-
-# Start the discovery service
-await discovery.start()
-```
-
-## Remote Speaker Agent
-
-UnitAPI includes a Remote Speaker Agent that allows you to control speakers on a remote machine. See the [Remote Speaker Agent documentation](remote_speaker_agent.md) for details.
-
-```python
-# Connect to a remote speaker agent
-from unitapi.core.client import UnitAPIClient
-import asyncio
-
-# Create a client
-client = UnitAPIClient(server_host='remote-host', server_port=7890)
-
-# List available speakers
-speakers = await client.list_devices(device_type='speaker')
-print("Available Speakers:", speakers)
-
-# Play audio on a specific speaker
-await client.execute_command(
-    device_id='speaker_01',
-    command='play_audio',
-    params={
-        'file': 'path/to/audio.wav'
-    }
-)
-```
-
-## Authentication and Security
-
-```python
-from unitapi.security.authentication import AuthenticationManager
-
-# Create authentication manager
-auth_manager = AuthenticationManager()
-
-# Register a user
-await auth_manager.register_user(
-    username='admin', 
-    password='secure_password', 
-    roles=['admin', 'user']
-)
-
-# Authenticate
-token = await auth_manager.authenticate('admin', 'secure_password')
-```
-
-## Protocol Support
-
-### WebSocket Protocol
-
-```python
-from unitapi.protocols.websocket import WebSocketProtocol
-import asyncio
-
-# Create WebSocket protocol handler
-ws_client = WebSocketProtocol(host='localhost', port=8765)
-
-# Connect and send message
-await ws_client.connect()
-await ws_client.send('device_command', {
-    'device_id': 'sensor_01',
-    'command': 'read_temperature'
-})
-
-# Add a message handler
-async def handle_temperature_data(data):
-    print(f"Received temperature: {data}")
-
-ws_client.add_message_handler('temperature_data', handle_temperature_data)
-
-# Disconnect when done
-await ws_client.disconnect()
-```
-
-### MQTT Protocol
-
-```python
-from unitapi.protocols.mqtt import MQTTProtocol
-import asyncio
-
-# Create MQTT protocol handler
-mqtt_client = MQTTProtocol(broker='localhost', port=1883)
-
-# Connect and publish
-await mqtt_client.connect()
-await mqtt_client.publish('unitapi/devices/temperature', '22.5')
-
-# Subscribe to a topic
-await mqtt_client.subscribe('unitapi/devices/+/status')
-
-# Add a message handler
-def handle_status_message(topic, payload):
-    print(f"Received status on {topic}: {payload}")
-
-mqtt_client.add_message_handler('unitapi/devices/+/status', handle_status_message)
-```
-
-## Docker Support
-
-UnitAPI includes Docker examples that demonstrate how to containerize UnitAPI applications. See the [Docker example README](../examples/docker/README.md) for details.
-
-```bash
-# Navigate to the docker example directory
-cd examples/docker
-
-# Start the containers
-docker-compose up -d
-
-# Access the client container
-docker exec -it unitapi-speaker-client bash
-```
-
-## Error Handling
-
-```python
-try:
-    # Device operations
-    await device.connect()
-    data = await device.read_sensor()
-except Exception as e:
-    # Handle connection or read errors
-    print(f"Device error: {e}")
-```
-
-## Best Practices
-
-1. Always use async/await for device operations
-2. Implement proper error handling
-3. Use authentication and access control
-4. Keep sensitive information secure
-5. Monitor device states and connections
-6. Use device discovery for automatic setup
-
-## Logging
-
-```python
-import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-```
-
-## Extensibility
-
-You can easily extend UnitAPI by:
-- Creating custom device types
-- Implementing new protocol handlers
-- Adding dynamic access rules
-- Integrating with existing systems
 
 # UnitAPI Installation Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/installation.md)
 
@@ -2440,182 +2127,321 @@ Potential future improvements for the SSH tools include:
 4. Support for additional authentication methods
 5. Batch command execution
 
-# UnitAPI Docker Example: Remote Speaker Agent [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/docker/README.md)
+# UnitAPI Usage Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/usage.md)
 
-This example demonstrates how to set up a virtual speaker server on one machine (PC1) and a client on another machine (PC2) using Docker Compose. The client will install the UnitAPI speaker agent on the server using SSH and then connect to it to control the virtual speakers.
+## Basic Concepts
 
-## Overview
+UnitAPI provides a flexible framework for managing network-connected devices across different protocols and platforms.
 
-This Docker Compose setup creates two containers:
+## Core Components
 
-1. **speaker-server**: A container that runs virtual speakers and exposes them through the UnitAPI protocol.
-2. **speaker-client**: A container that connects to the speaker server, installs the UnitAPI speaker agent using SSH, and provides a client interface to control the speakers.
+- **Server**: Manages device registration and communication
+- **Client**: Interacts with the server to control devices
+- **Devices**: Represent different types of network peripherals
+- **Protocols**: Support for various communication methods
 
-This setup simulates a real-world scenario where you have a remote PC with speakers that you want to control from another PC.
+## Quick Start
 
-## Prerequisites
+### Starting a Server
 
-- Docker and Docker Compose installed on your machine
-- Basic knowledge of Docker and Docker Compose
-- Understanding of the UnitAPI speaker agent
+```python
+from unitapi.core.server import UnitAPIServer
 
-## Directory Structure
+# Create a server instance
+server = UnitAPIServer(host='localhost', port=7890)
 
+# Register a device
+server.register_device(
+    device_id='temp_sensor_01', 
+    device_type='sensor',
+    metadata={
+        'location': 'living_room',
+        'capabilities': ['temperature', 'humidity']
+    }
+)
+
+# Start the server
+server.start()
 ```
-docker/
-├── docker-compose.yml         # Docker Compose configuration
-├── README.md                  # This file
-├── speaker-server/            # Server container files
-│   ├── Dockerfile             # Server container definition
-│   ├── entrypoint.sh          # Server startup script
-│   ├── virtual_speaker.py     # Virtual speaker implementation
-│   └── data/                  # Shared volume for server data
-└── speaker-client/            # Client container files
-    ├── Dockerfile             # Client container definition
-    ├── entrypoint.sh          # Client startup script
-    ├── client.py              # Speaker client implementation
-    └── data/                  # Shared volume for client data
+
+### Client Interaction
+
+```python
+from unitapi.core.client import UnitAPIClient
+
+# Create a client
+client = UnitAPIClient(server_host='localhost', server_port=7890)
+
+# List available devices
+devices = client.list_devices()
+print("Available Devices:", devices)
+
+# List specific device type
+sensor_devices = client.list_devices(device_type='sensor')
+print("Sensor Devices:", sensor_devices)
 ```
 
-## How It Works
+## Device Types
 
-1. The `speaker-server` container creates virtual speakers and exposes them through the UnitAPI protocol.
-2. The `speaker-client` container connects to the server via SSH and installs the UnitAPI speaker agent.
-3. The client then connects to the server's UnitAPI interface to control the virtual speakers.
+### Camera Devices
 
-This simulates the process of installing the UnitAPI speaker agent on a remote PC and controlling its speakers.
+```python
+from unitapi.devices.camera import CameraDevice
+import asyncio
 
-## Usage
+# Create a camera device
+camera = CameraDevice(
+    device_id='camera_01',
+    name='Main Camera',
+    metadata={
+        'resolution': '1080p',
+        'fps': 30,
+        'location': 'front_door'
+    }
+)
 
-### Starting the Containers
+# Connect to the camera
+await camera.connect()
+
+# Capture an image
+image_data = await camera.capture_image()
+print(f"Image captured: {image_data}")
+
+# Start a video stream
+stream_info = await camera.start_video_stream(duration=10)
+print(f"Stream started: {stream_info}")
+```
+
+### Microphone Devices
+
+```python
+from unitapi.devices.microphone import MicrophoneDevice
+import asyncio
+
+# Create a microphone device
+mic = MicrophoneDevice(
+    device_id='mic_01',
+    name='Desktop Microphone',
+    metadata={
+        'sample_rate': 44100,
+        'channels': 2,
+        'location': 'office'
+    }
+)
+
+# Connect to the microphone
+await mic.connect()
+
+# Record audio
+audio_data = await mic.record_audio(duration=5, sample_rate=44100)
+print(f"Audio recorded: {audio_data}")
+```
+
+### GPIO Devices
+
+```python
+from unitapi.devices.gpio import GPIODevice
+import asyncio
+
+# Create GPIO device
+gpio = GPIODevice(
+    device_id='rpi_gpio_01', 
+    name='Raspberry Pi GPIO',
+    metadata={'total_pins': 40}
+)
+
+# Connect to the GPIO device
+await gpio.connect()
+
+# Set pin mode and control
+await gpio.set_pin_mode(18, 'output')
+await gpio.digital_write(18, True)
+
+# Read from a pin
+await gpio.set_pin_mode(17, 'input')
+pin_value = await gpio.digital_read(17)
+print(f"Pin 17 value: {pin_value}")
+
+# PWM control
+await gpio.set_pin_mode(12, 'output')
+await gpio.pwm_write(12, 0.5)  # 50% duty cycle
+```
+
+## Device Discovery
+
+UnitAPI provides a comprehensive device discovery mechanism that can detect devices on the local network and on the local machine.
+
+```python
+from examples.device_discovery import DeviceDiscoveryService
+import asyncio
+
+# Create a discovery service
+discovery = DeviceDiscoveryService(
+    server_host='0.0.0.0',
+    server_port=7890,
+    discovery_port=7891,
+    debug=True
+)
+
+# Discover devices
+devices = await discovery.discover_devices()
+print(f"Discovered {len(devices)} devices")
+
+# Start the discovery service
+await discovery.start()
+```
+
+## Remote Speaker Agent
+
+UnitAPI includes a Remote Speaker Agent that allows you to control speakers on a remote machine. See the [Remote Speaker Agent documentation](remote_speaker_agent.md) for details.
+
+```python
+# Connect to a remote speaker agent
+from unitapi.core.client import UnitAPIClient
+import asyncio
+
+# Create a client
+client = UnitAPIClient(server_host='remote-host', server_port=7890)
+
+# List available speakers
+speakers = await client.list_devices(device_type='speaker')
+print("Available Speakers:", speakers)
+
+# Play audio on a specific speaker
+await client.execute_command(
+    device_id='speaker_01',
+    command='play_audio',
+    params={
+        'file': 'path/to/audio.wav'
+    }
+)
+```
+
+## Authentication and Security
+
+```python
+from unitapi.security.authentication import AuthenticationManager
+
+# Create authentication manager
+auth_manager = AuthenticationManager()
+
+# Register a user
+await auth_manager.register_user(
+    username='admin', 
+    password='secure_password', 
+    roles=['admin', 'user']
+)
+
+# Authenticate
+token = await auth_manager.authenticate('admin', 'secure_password')
+```
+
+## Protocol Support
+
+### WebSocket Protocol
+
+```python
+from unitapi.protocols.websocket import WebSocketProtocol
+import asyncio
+
+# Create WebSocket protocol handler
+ws_client = WebSocketProtocol(host='localhost', port=8765)
+
+# Connect and send message
+await ws_client.connect()
+await ws_client.send('device_command', {
+    'device_id': 'sensor_01',
+    'command': 'read_temperature'
+})
+
+# Add a message handler
+async def handle_temperature_data(data):
+    print(f"Received temperature: {data}")
+
+ws_client.add_message_handler('temperature_data', handle_temperature_data)
+
+# Disconnect when done
+await ws_client.disconnect()
+```
+
+### MQTT Protocol
+
+```python
+from unitapi.protocols.mqtt import MQTTProtocol
+import asyncio
+
+# Create MQTT protocol handler
+mqtt_client = MQTTProtocol(broker='localhost', port=1883)
+
+# Connect and publish
+await mqtt_client.connect()
+await mqtt_client.publish('unitapi/devices/temperature', '22.5')
+
+# Subscribe to a topic
+await mqtt_client.subscribe('unitapi/devices/+/status')
+
+# Add a message handler
+def handle_status_message(topic, payload):
+    print(f"Received status on {topic}: {payload}")
+
+mqtt_client.add_message_handler('unitapi/devices/+/status', handle_status_message)
+```
+
+## Docker Support
+
+UnitAPI includes Docker examples that demonstrate how to containerize UnitAPI applications. See the [Docker example README](../examples/docker/README.md) for details.
 
 ```bash
-# Navigate to the docker directory
+# Navigate to the docker example directory
 cd examples/docker
 
 # Start the containers
 docker-compose up -d
 
-# View the logs
-docker-compose logs -f
-```
-
-### Accessing the Client Container
-
-```bash
-# Access the client container shell
+# Access the client container
 docker exec -it unitapi-speaker-client bash
-
-# Inside the container, you can use the client script
-python /opt/unitapi/client.py --host 172.28.1.2 --list
-python /opt/unitapi/client.py --host 172.28.1.2 --test
 ```
 
-### Accessing the Server Container
+## Error Handling
 
-```bash
-# Access the server container shell
-docker exec -it unitapi-speaker-server bash
-
-# Inside the container, you can check the speaker agent status
-unitapi-speaker --status
-unitapi-speaker --list
+```python
+try:
+    # Device operations
+    await device.connect()
+    data = await device.read_sensor()
+except Exception as e:
+    # Handle connection or read errors
+    print(f"Device error: {e}")
 ```
 
-### Stopping the Containers
+## Best Practices
 
-```bash
-# Stop the containers
-docker-compose down
+1. Always use async/await for device operations
+2. Implement proper error handling
+3. Use authentication and access control
+4. Keep sensitive information secure
+5. Monitor device states and connections
+6. Use device discovery for automatic setup
+
+## Logging
+
+```python
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 ```
 
-## Customization
+## Extensibility
 
-You can customize the setup by modifying the following files:
-
-- `docker-compose.yml`: Change the network configuration, port mappings, etc.
-- `speaker-server/virtual_speaker.py`: Modify the virtual speaker implementation.
-- `speaker-client/client.py`: Customize the client behavior.
-
-### Environment Variables
-
-The Docker Compose setup supports the following environment variables:
-
-- `VIRTUAL_SPEAKERS`: Number of virtual speakers to create on the server (default: 2)
-- `SERVER_HOST`: Hostname or IP address of the server (default: 172.28.1.2)
-- `SERVER_PORT`: Port number of the UnitAPI server (default: 7890)
-
-You can set these variables in the `docker-compose.yml` file or pass them when starting the containers:
-
-```bash
-VIRTUAL_SPEAKERS=4 docker-compose up -d
-```
-
-## Testing the Setup
-
-Once the containers are running, you can test the setup by:
-
-1. Listing the available speakers:
-   ```bash
-   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --list
-   ```
-
-2. Testing all speakers:
-   ```bash
-   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --test
-   ```
-
-3. Testing a specific speaker:
-   ```bash
-   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --device virtual_speaker_1
-   ```
-
-4. Monitoring the speakers:
-   ```bash
-   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --monitor --interval 30
-   ```
-
-## Troubleshooting
-
-If you encounter issues with the setup, check the following:
-
-1. Make sure the containers are running:
-   ```bash
-   docker-compose ps
-   ```
-
-2. Check the container logs:
-   ```bash
-   docker-compose logs -f
-   ```
-
-3. Verify the network connectivity between the containers:
-   ```bash
-   docker exec -it unitapi-speaker-client ping 172.28.1.2
-   ```
-
-4. Check if the SSH server is running on the server container:
-   ```bash
-   docker exec -it unitapi-speaker-server service ssh status
-   ```
-
-5. Verify the UnitAPI server is running on the server container:
-   ```bash
-   docker exec -it unitapi-speaker-server ps aux | grep unitapi
-   ```
-
-## Extending the Example
-
-You can extend this example to include more features:
-
-1. Add more virtual speakers by changing the `VIRTUAL_SPEAKERS` environment variable.
-2. Implement a web interface for controlling the speakers.
-3. Add support for playing audio files from the client to the server.
-4. Integrate with other UnitAPI devices like microphones or cameras.
-
-## Conclusion
-
-This Docker example demonstrates how to use the UnitAPI speaker agent to control speakers on a remote machine. It shows the process of installing the agent via SSH and then using it to control the speakers. This can be used as a starting point for building more complex applications that involve remote audio control.
+You can easily extend UnitAPI by:
+- Creating custom device types
+- Implementing new protocol handlers
+- Adding dynamic access rules
+- Integrating with existing systems
 
 # UnitAPI Examples [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/examples.md)
 
@@ -3254,6 +3080,250 @@ Remote keyboard control provides powerful capabilities but also introduces secur
 3. **Kiosk Systems**: Implement controlled keyboard input for kiosk applications
 4. **Accessibility**: Create custom keyboard interfaces for accessibility purposes
 
+# Remote Keyboard Control [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/pc/keyboard/README_remote_keyboard_fixed.md)
+
+This directory contains scripts for controlling a keyboard on a remote Raspberry Pi device.
+
+## Overview
+
+The Remote Keyboard Control system allows you to send keyboard commands from your computer to a Raspberry Pi over the network. This can be useful for:
+
+- Remote control of Raspberry Pi applications
+- Automation of keyboard input for testing
+- Controlling devices without direct physical access
+- Creating interactive demos and presentations
+
+## Components
+
+The system consists of two main components:
+
+1. **Server** (`remote_keyboard_server.py`): Runs on the Raspberry Pi and registers a keyboard device with the UnitAPI server.
+2. **Client** (`remote_keyboard_control_fixed.py`): Runs on your computer and sends keyboard commands to the server.
+
+## Installation
+
+### Server Installation (on Raspberry Pi)
+
+Use the installation script to set up the server on your Raspberry Pi:
+
+```bash
+./scripts/install_remote_keyboard_server_fixed.sh --host <raspberry_pi_ip> --password <raspberry_pi_password>
+```
+
+This script will:
+- Copy the necessary files to the Raspberry Pi
+- Install required dependencies
+- Set up a systemd service to run the server automatically
+
+For detailed installation instructions, see [Remote Keyboard Server Installation Guide](../docs/remote_keyboard_server_installation.md).
+
+### Client Configuration (on your computer)
+
+1. Update your `.env` file with the Raspberry Pi connection details:
+
+```
+RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
+RPI_USER=pi             # Replace with your Raspberry Pi username
+RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
+```
+
+2. Make sure you have the required Python packages installed:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### Basic Usage
+
+To check the connection to the Raspberry Pi:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --check-connection
+```
+
+To list available keyboard devices on the Raspberry Pi:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --list
+```
+
+To type text on the remote keyboard:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --text "Hello, world!"
+```
+
+To press a specific key:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --key enter
+```
+
+To press a hotkey combination:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --hotkey ctrl,a
+```
+
+### Running the Demo
+
+To run a demo sequence that demonstrates various keyboard actions:
+
+```bash
+python examples/remote_keyboard_control_fixed.py
+```
+
+This will:
+1. List available keyboards on the Raspberry Pi
+2. Type some text
+3. Press Enter
+4. Type more text
+5. Press Ctrl+A to select all text
+
+## Troubleshooting
+
+### Connection Issues
+
+If you're having trouble connecting to the Raspberry Pi:
+
+1. Check that the Raspberry Pi is powered on and connected to the network
+2. Verify that the IP address in your `.env` file is correct
+3. Make sure the UnitAPI server is running on the Raspberry Pi
+4. Check the server status:
+
+```bash
+python scripts/ssh_connect_wrapper.sh <username>@<raspberry_pi_ip> <password> -c 'systemctl status unitapi-keyboard.service'
+```
+
+### Local Keyboard Control Issue
+
+If the script is controlling your local keyboard instead of the remote one:
+
+1. Make sure you're using the fixed version of the client script (`remote_keyboard_control_fixed.py`)
+2. Check that the connection to the remote server is successful
+3. Verify that the keyboard device is registered on the remote server
+
+## Advanced Configuration
+
+### Custom Keyboard Device
+
+You can specify a custom keyboard device ID and name when starting the server:
+
+```bash
+python examples/remote_keyboard_server.py --device-id custom_keyboard --name "My Custom Keyboard"
+```
+
+### Multiple Keyboards
+
+You can run multiple instances of the server with different device IDs to control multiple keyboards:
+
+```bash
+python examples/remote_keyboard_server.py --device-id keyboard_01 --port 7890
+python examples/remote_keyboard_server.py --device-id keyboard_02 --port 7891
+```
+
+## Security Considerations
+
+- The remote keyboard control system does not include authentication by default
+- Consider running the server on a private network
+- Use SSH tunneling for secure remote access
+- Be cautious when allowing remote keyboard control, as it can potentially execute commands on the Raspberry Pi
+
+## Further Reading
+
+- [Remote Keyboard Server Installation Guide](../docs/remote_keyboard_server_installation.md)
+- [UnitAPI Documentation](../docs/index.md)
+- [Input Devices Documentation](../docs/device_types.md)
+
+# Remote Keyboard Control Example [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/pc/keyboard/README_remote_keyboard.md)
+
+This example demonstrates how to control a keyboard on a remote Raspberry Pi device using UnitAPI. The script uses connection details (host, username, password) from a `.env` file.
+
+## Prerequisites
+
+1. A Raspberry Pi with UnitAPI server installed and running
+2. Python 3.6+ on both the client and Raspberry Pi
+3. Required Python packages:
+   - `unitapi`
+   - `python-dotenv`
+
+## Setup
+
+1. Make sure the UnitAPI server is running on your Raspberry Pi
+2. Update the `.env` file with your Raspberry Pi connection details:
+   ```
+   RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
+   RPI_USER=pi             # Replace with your Raspberry Pi username
+   RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
+   ```
+
+3. Make sure the keyboard device is registered on the Raspberry Pi UnitAPI server
+
+## Usage
+
+### List available keyboards on the remote device
+
+```bash
+python examples/remote_keyboard_control.py --list
+```
+
+### Type text on a specific keyboard
+
+```bash
+python examples/remote_keyboard_control.py --device-id keyboard_01 --text "Hello, world!"
+```
+
+### Press a key on a specific keyboard
+
+```bash
+python examples/remote_keyboard_control.py --device-id keyboard_01 --key "enter"
+```
+
+### Press a hotkey combination on a specific keyboard
+
+```bash
+python examples/remote_keyboard_control.py --device-id keyboard_01 --hotkey "ctrl,a"
+```
+
+### Run a demo sequence
+
+If no specific action is provided, the script will run a demo sequence on the first available keyboard:
+
+```bash
+python examples/remote_keyboard_control.py
+```
+
+## Troubleshooting
+
+If no keyboards are found, make sure:
+
+1. The UnitAPI server is running on your Raspberry Pi
+2. The keyboard device is registered with the server
+3. The connection details in the `.env` file are correct
+4. There are no network issues preventing connection to the Raspberry Pi
+
+You can start the device discovery service on the Raspberry Pi with:
+
+```bash
+python examples/device_discovery.py
+```
+
+## How It Works
+
+1. The script loads connection details from the `.env` file
+2. It connects to the UnitAPI server on the Raspberry Pi
+3. It lists available keyboard devices or performs the specified action
+4. Commands are sent to the remote keyboard device through the UnitAPI client
+
+The script demonstrates:
+- Connecting to a remote UnitAPI server
+- Listing available devices
+- Typing text on a remote keyboard
+- Pressing keys and hotkey combinations
+- Using environment variables for configuration
+
 # PC Microphone Examples for UnitAPI [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/pc/microphone/README.md)
 
 This directory contains examples for controlling a microphone on a PC using UnitAPI. These examples demonstrate how to record audio, measure audio levels, and control the microphone remotely.
@@ -3877,630 +3947,7 @@ The speaker functionality can be integrated with other applications:
 4. **Remote Control**: Control audio playback on a remote system
 5. **Sound Generation**: Generate tones and sounds for testing or musical applications
 
-# Remote Keyboard Control [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/README_remote_keyboard_fixed.md)
-
-This directory contains scripts for controlling a keyboard on a remote Raspberry Pi device.
-
-## Overview
-
-The Remote Keyboard Control system allows you to send keyboard commands from your computer to a Raspberry Pi over the network. This can be useful for:
-
-- Remote control of Raspberry Pi applications
-- Automation of keyboard input for testing
-- Controlling devices without direct physical access
-- Creating interactive demos and presentations
-
-## Components
-
-The system consists of two main components:
-
-1. **Server** (`remote_keyboard_server.py`): Runs on the Raspberry Pi and registers a keyboard device with the UnitAPI server.
-2. **Client** (`remote_keyboard_control_fixed.py`): Runs on your computer and sends keyboard commands to the server.
-
-## Installation
-
-### Server Installation (on Raspberry Pi)
-
-Use the installation script to set up the server on your Raspberry Pi:
-
-```bash
-./scripts/install_remote_keyboard_server_fixed.sh --host <raspberry_pi_ip> --password <raspberry_pi_password>
-```
-
-This script will:
-- Copy the necessary files to the Raspberry Pi
-- Install required dependencies
-- Set up a systemd service to run the server automatically
-
-For detailed installation instructions, see [Remote Keyboard Server Installation Guide](../docs/remote_keyboard_server_installation.md).
-
-### Client Configuration (on your computer)
-
-1. Update your `.env` file with the Raspberry Pi connection details:
-
-```
-RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
-RPI_USER=pi             # Replace with your Raspberry Pi username
-RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
-```
-
-2. Make sure you have the required Python packages installed:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-### Basic Usage
-
-To check the connection to the Raspberry Pi:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --check-connection
-```
-
-To list available keyboard devices on the Raspberry Pi:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --list
-```
-
-To type text on the remote keyboard:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --text "Hello, world!"
-```
-
-To press a specific key:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --key enter
-```
-
-To press a hotkey combination:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --device-id keyboard_01 --hotkey ctrl,a
-```
-
-### Running the Demo
-
-To run a demo sequence that demonstrates various keyboard actions:
-
-```bash
-python examples/remote_keyboard_control_fixed.py
-```
-
-This will:
-1. List available keyboards on the Raspberry Pi
-2. Type some text
-3. Press Enter
-4. Type more text
-5. Press Ctrl+A to select all text
-
-## Troubleshooting
-
-### Connection Issues
-
-If you're having trouble connecting to the Raspberry Pi:
-
-1. Check that the Raspberry Pi is powered on and connected to the network
-2. Verify that the IP address in your `.env` file is correct
-3. Make sure the UnitAPI server is running on the Raspberry Pi
-4. Check the server status:
-
-```bash
-python scripts/ssh_connect_wrapper.sh <username>@<raspberry_pi_ip> <password> -c 'systemctl status unitapi-keyboard.service'
-```
-
-### Local Keyboard Control Issue
-
-If the script is controlling your local keyboard instead of the remote one:
-
-1. Make sure you're using the fixed version of the client script (`remote_keyboard_control_fixed.py`)
-2. Check that the connection to the remote server is successful
-3. Verify that the keyboard device is registered on the remote server
-
-## Advanced Configuration
-
-### Custom Keyboard Device
-
-You can specify a custom keyboard device ID and name when starting the server:
-
-```bash
-python examples/remote_keyboard_server.py --device-id custom_keyboard --name "My Custom Keyboard"
-```
-
-### Multiple Keyboards
-
-You can run multiple instances of the server with different device IDs to control multiple keyboards:
-
-```bash
-python examples/remote_keyboard_server.py --device-id keyboard_01 --port 7890
-python examples/remote_keyboard_server.py --device-id keyboard_02 --port 7891
-```
-
-## Security Considerations
-
-- The remote keyboard control system does not include authentication by default
-- Consider running the server on a private network
-- Use SSH tunneling for secure remote access
-- Be cautious when allowing remote keyboard control, as it can potentially execute commands on the Raspberry Pi
-
-## Further Reading
-
-- [Remote Keyboard Server Installation Guide](../docs/remote_keyboard_server_installation.md)
-- [UnitAPI Documentation](../docs/index.md)
-- [Input Devices Documentation](../docs/device_types.md)
-
-# Remote Keyboard Control Example [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/README_remote_keyboard.md)
-
-This example demonstrates how to control a keyboard on a remote Raspberry Pi device using UnitAPI. The script uses connection details (host, username, password) from a `.env` file.
-
-## Prerequisites
-
-1. A Raspberry Pi with UnitAPI server installed and running
-2. Python 3.6+ on both the client and Raspberry Pi
-3. Required Python packages:
-   - `unitapi`
-   - `python-dotenv`
-
-## Setup
-
-1. Make sure the UnitAPI server is running on your Raspberry Pi
-2. Update the `.env` file with your Raspberry Pi connection details:
-   ```
-   RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
-   RPI_USER=pi             # Replace with your Raspberry Pi username
-   RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
-   ```
-
-3. Make sure the keyboard device is registered on the Raspberry Pi UnitAPI server
-
-## Usage
-
-### List available keyboards on the remote device
-
-```bash
-python examples/remote_keyboard_control.py --list
-```
-
-### Type text on a specific keyboard
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --text "Hello, world!"
-```
-
-### Press a key on a specific keyboard
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --key "enter"
-```
-
-### Press a hotkey combination on a specific keyboard
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --hotkey "ctrl,a"
-```
-
-### Run a demo sequence
-
-If no specific action is provided, the script will run a demo sequence on the first available keyboard:
-
-```bash
-python examples/remote_keyboard_control.py
-```
-
-## Troubleshooting
-
-If no keyboards are found, make sure:
-
-1. The UnitAPI server is running on your Raspberry Pi
-2. The keyboard device is registered with the server
-3. The connection details in the `.env` file are correct
-4. There are no network issues preventing connection to the Raspberry Pi
-
-You can start the device discovery service on the Raspberry Pi with:
-
-```bash
-python examples/device_discovery.py
-```
-
-## How It Works
-
-1. The script loads connection details from the `.env` file
-2. It connects to the UnitAPI server on the Raspberry Pi
-3. It lists available keyboard devices or performs the specified action
-4. Commands are sent to the remote keyboard device through the UnitAPI client
-
-The script demonstrates:
-- Connecting to a remote UnitAPI server
-- Listing available devices
-- Typing text on a remote keyboard
-- Pressing keys and hotkey combinations
-- Using environment variables for configuration
-
-# Remote Keyboard Control [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_keyboard_control.md)
-
-This document describes how to set up and use the UnitAPI Remote Keyboard Control feature, which allows you to control a keyboard on a remote Raspberry Pi device.
-
-## Overview
-
-The Remote Keyboard Control feature consists of two main components:
-
-1. **Server Component** (`remote_keyboard_server.py`): Runs on the Raspberry Pi and registers a keyboard device with the UnitAPI server.
-2. **Client Component** (`remote_keyboard_control.py`): Runs on your local machine and sends commands to the remote keyboard.
-
-This setup allows you to remotely type text, press keys, and execute keyboard shortcuts on the Raspberry Pi from your local machine.
-
-## Setup Instructions
-
-### 1. Server Setup (on Raspberry Pi)
-
-You can set up the server component manually or use the provided installation script.
-
-#### Option A: Using the Installation Script
-
-The easiest way to set up the server is to use the provided installation script:
-
-```bash
-./scripts/install_remote_keyboard_server.sh --host <RPI_IP_ADDRESS> --user pi --password <RPI_PASSWORD>
-```
-
-This script will:
-- Copy the necessary files to the Raspberry Pi
-- Install required dependencies
-- Set up a systemd service to run the server automatically at boot
-- Start the server
-
-#### Option B: Manual Setup
-
-If you prefer to set up the server manually:
-
-1. Copy the server script to the Raspberry Pi:
-   ```bash
-   scp examples/remote_keyboard_server.py pi@<RPI_IP_ADDRESS>:/home/pi/
-   ```
-
-2. Install required dependencies on the Raspberry Pi:
-   ```bash
-   ssh pi@<RPI_IP_ADDRESS>
-   sudo apt-get update
-   sudo apt-get install -y python3-pip
-   pip3 install unitapi python-dotenv pyautogui
-   ```
-
-3. Run the server script:
-   ```bash
-   python3 remote_keyboard_server.py
-   ```
-
-### 2. Client Setup (on your local machine)
-
-1. Update the `.env` file with your Raspberry Pi connection details:
-   ```
-   RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
-   RPI_USER=pi             # Replace with your Raspberry Pi username
-   RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
-   ```
-
-2. Run the client script to test the connection:
-   ```bash
-   python examples/remote_keyboard_control.py --list
-   ```
-
-## Usage
-
-### List Available Keyboards
-
-```bash
-python examples/remote_keyboard_control.py --list
-```
-
-### Type Text
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --text "Hello, world!"
-```
-
-### Press a Key
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --key "enter"
-```
-
-### Press a Hotkey Combination
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_01 --hotkey "ctrl,a"
-```
-
-### Run a Demo Sequence
-
-```bash
-python examples/remote_keyboard_control.py
-```
-
-## How It Works
-
-1. The server script (`remote_keyboard_server.py`) runs on the Raspberry Pi and:
-   - Creates a UnitAPI server
-   - Registers a keyboard device
-   - Defines command handlers for typing text, pressing keys, and pressing hotkeys
-
-2. The client script (`remote_keyboard_control.py`) runs on your local machine and:
-   - Connects to the UnitAPI server on the Raspberry Pi
-   - Sends commands to control the keyboard
-
-3. When you run a command like `--text "Hello, world!"`, the client:
-   - Sends a command to the server with the text to type
-   - The server receives the command and uses the keyboard device to type the text
-
-## Troubleshooting
-
-### No Keyboards Found
-
-If the client reports "No keyboards found on remote device":
-
-1. Make sure the server is running on the Raspberry Pi:
-   ```bash
-   ssh pi@<RPI_IP_ADDRESS> "systemctl status unitapi-keyboard.service"
-   ```
-
-2. If the service is not running, start it:
-   ```bash
-   ssh pi@<RPI_IP_ADDRESS> "sudo systemctl start unitapi-keyboard.service"
-   ```
-
-3. Check if the server is listening on the correct port:
-   ```bash
-   ssh pi@<RPI_IP_ADDRESS> "netstat -tuln | grep 7890"
-   ```
-
-4. Make sure there are no firewall rules blocking the connection:
-   ```bash
-   ssh pi@<RPI_IP_ADDRESS> "sudo iptables -L"
-   ```
-
-### Connection Issues
-
-If you're having trouble connecting to the Raspberry Pi:
-
-1. Make sure the Raspberry Pi is on the same network as your local machine
-2. Verify the IP address is correct
-3. Check that SSH is enabled on the Raspberry Pi
-4. Try pinging the Raspberry Pi to check connectivity:
-   ```bash
-   ping <RPI_IP_ADDRESS>
-   ```
-
-## Advanced Configuration
-
-### Changing the Server Port
-
-By default, the server runs on port 7890. To use a different port:
-
-1. On the server side:
-   ```bash
-   python3 remote_keyboard_server.py --port 8000
-   ```
-
-2. On the client side:
-   ```bash
-   python examples/remote_keyboard_control.py --port 8000 --list
-   ```
-
-### Using Multiple Keyboard Devices
-
-You can register multiple keyboard devices with different IDs:
-
-```bash
-python3 remote_keyboard_server.py --device-id keyboard_02 --name "Second Keyboard"
-```
-
-Then control them individually from the client:
-
-```bash
-python examples/remote_keyboard_control.py --device-id keyboard_02 --text "Hello from second keyboard"
-```
-
-## Security Considerations
-
-- The current implementation uses plain text passwords in the `.env` file, which is not secure for production use
-- Consider using SSH keys for authentication instead of passwords
-- The UnitAPI server does not implement authentication by default, so anyone with network access can control the keyboard
-- For production use, consider implementing proper authentication and encryption
-
-## Further Development
-
-Possible enhancements for the Remote Keyboard Control feature:
-
-- Add authentication to the UnitAPI server
-- Implement encryption for the communication
-- Create a graphical user interface for the client
-- Add support for more complex keyboard operations
-- Implement keyboard macros and sequences
-
-# Remote Keyboard Server Installation Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_keyboard_server_installation.md)
-
-This document provides information about installing and configuring the UnitAPI Remote Keyboard Server on a Raspberry Pi.
-
-## Overview
-
-The Remote Keyboard Server allows you to control a Raspberry Pi's keyboard remotely using the UnitAPI framework. This enables you to send keystrokes to the Raspberry Pi from another computer, which can be useful for remote control, automation, and testing scenarios.
-
-## Installation Options
-
-There are two installation scripts available:
-
-1. **Standard Installation Script**: `scripts/install_remote_keyboard_server.sh`
-2. **Fixed Installation Script**: `scripts/install_remote_keyboard_server_fixed.sh` (Recommended)
-
-The fixed installation script includes several improvements to handle common installation issues.
-
-## Improvements in the Fixed Installation Script
-
-The `install_remote_keyboard_server_fixed.sh` script includes the following improvements:
-
-1. **Improved SSH Authentication**:
-   - Explicitly disables pubkey authentication when using password authentication to prevent "too many authentication failures" errors
-   - Adds retry mechanism for SSH connections with configurable number of attempts
-   - Provides better error messages for authentication failures
-
-2. **Repository Handling**:
-   - Detects outdated Raspberry Pi OS versions (like "stretch")
-   - Updates repository sources to use archive repositories for outdated OS versions
-   - Prevents 404 errors when accessing outdated repositories
-
-3. **SSL Certificate Verification**:
-   - Disables SSL certificate verification for pip installations using `--trusted-host` flags
-   - Resolves SSL certificate verification failures when installing Python packages
-   - Adds trusted hosts for both PyPI and piwheels repositories
-
-4. **Improved File Transfer**:
-   - Adds retry mechanism for SCP file transfers
-   - Verifies successful file transfers before proceeding
-   - Creates a local service file and transfers it directly to avoid path issues
-
-5. **Error Handling and Recovery**:
-   - Adds retry mechanisms for package installation and unitapi installation
-   - Continues installation even if some steps fail, with appropriate warnings
-   - Provides more detailed error messages and status updates
-
-## Usage
-
-### Basic Installation
-
-```bash
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry
-```
-
-### Using SSH Key Authentication
-
-```bash
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --identity ~/.ssh/id_rsa
-```
-
-### Controlling the Service
-
-```bash
-# Start the service
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command start
-
-# Stop the service
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command stop
-
-# Restart the service
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command restart
-
-# Check service status
-./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command status
-```
-
-## Client Configuration
-
-After installing the Remote Keyboard Server on your Raspberry Pi, you need to configure the client to connect to it.
-
-1. Update your `.env` file with the following:
-
-```
-RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
-RPI_USER=pi             # Replace with your Raspberry Pi username
-RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
-```
-
-2. Run the client:
-
-```bash
-python examples/remote_keyboard_control_fixed.py
-```
-
-> **Note:** We recommend using the fixed version of the client script (`remote_keyboard_control_fixed.py`) instead of the original version (`remote_keyboard_control.py`). The fixed version includes better error handling, connection checking, and troubleshooting guidance.
-
-### Client Script Options
-
-The remote keyboard control client supports several command-line options:
-
-```bash
-python examples/remote_keyboard_control_fixed.py --help
-```
-
-Common options include:
-
-- `--check-connection`: Test the connection to the remote server
-- `--list`: List available keyboards on the remote device
-- `--device-id DEVICE_ID`: Specify a keyboard device ID to control
-- `--text TEXT`: Type the specified text on the remote keyboard
-- `--key KEY`: Press a specific key on the remote keyboard
-- `--hotkey KEYS`: Press a hotkey combination (comma-separated keys, e.g., ctrl,s)
-
-## Troubleshooting
-
-### SSH Connection Issues
-
-If you're experiencing SSH connection issues:
-
-1. Verify that the Raspberry Pi is reachable on the network:
-   ```bash
-   ping <raspberry_pi_ip>
-   ```
-
-2. Check that SSH is enabled on the Raspberry Pi:
-   ```bash
-   ssh <username>@<raspberry_pi_ip>
-   ```
-
-3. If using password authentication, ensure the password is correct.
-
-4. If using key-based authentication, ensure the key file exists and has the correct permissions:
-   ```bash
-   chmod 600 ~/.ssh/id_rsa
-   ```
-
-### Package Installation Issues
-
-If package installation fails:
-
-1. Check the Raspberry Pi's internet connection.
-
-2. Try updating the package lists manually:
-   ```bash
-   sudo apt-get update
-   ```
-
-3. If using an outdated Raspberry Pi OS version, consider upgrading to a newer version.
-
-### Service Issues
-
-If the service fails to start:
-
-1. Check the service status:
-   ```bash
-   sudo systemctl status unitapi-keyboard.service
-   ```
-
-2. Check the service logs:
-   ```bash
-   journalctl -u unitapi-keyboard.service
-   ```
-
-3. Verify that the Python virtual environment was created correctly:
-   ```bash
-   ls -la /home/pi/unitapi/venv/bin/python
-   ```
-
-## Python Installation Alternative
-
-If you prefer using Python instead of Bash for installation, you can use the `scripts/install_remote_keyboard_server.py` script:
-
-```bash
-python scripts/install_remote_keyboard_server.py --host 192.168.1.100 --password raspberry
-```
-
-This Python script provides similar functionality to the Bash script but may be more suitable for environments where Python is preferred over Bash.
-
-# UnitAPI Remote Speaker Agent [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_speaker_agent.md)
+# UnitAPI Remote Speaker Agent [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/pc/speaker/remote_speaker_agent.md)
 
 The UnitAPI Remote Speaker Agent allows you to manage and control speakers on a remote PC via SSH. This document explains how to install, configure, and use this feature.
 
@@ -4758,6 +4205,21 @@ cameras = await camera_client.list_devices(device_type="camera")
 
 # Create a complete IoT system
 # ...
+
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/README_remote_keyboard_fixed.md)
+
+
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/README_remote_keyboard.md)
+
+
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_keyboard_control.md)
+
+
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_keyboard_server_installation.md)
+
+
+ [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/remote_speaker_agent.md)
+
 
 # Raspberry Pi Camera Examples for UnitAPI [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/rpi/camera/README.md)
 
@@ -5128,6 +4590,184 @@ Remote keyboard control provides powerful capabilities but also introduces secur
 2. **Automation**: Automate repetitive keyboard tasks
 3. **Kiosk Systems**: Implement controlled keyboard input for kiosk applications
 4. **Accessibility**: Create custom keyboard interfaces for accessibility purposes
+
+# Remote Keyboard Server Installation Guide [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/rpi/keyboard/remote_keyboard_server_installation.md)
+
+This document provides information about installing and configuring the UnitAPI Remote Keyboard Server on a Raspberry Pi.
+
+## Overview
+
+The Remote Keyboard Server allows you to control a Raspberry Pi's keyboard remotely using the UnitAPI framework. This enables you to send keystrokes to the Raspberry Pi from another computer, which can be useful for remote control, automation, and testing scenarios.
+
+## Installation Options
+
+There are two installation scripts available:
+
+1. **Standard Installation Script**: `scripts/install_remote_keyboard_server.sh`
+2. **Fixed Installation Script**: `scripts/install_remote_keyboard_server_fixed.sh` (Recommended)
+
+The fixed installation script includes several improvements to handle common installation issues.
+
+## Improvements in the Fixed Installation Script
+
+The `install_remote_keyboard_server_fixed.sh` script includes the following improvements:
+
+1. **Improved SSH Authentication**:
+   - Explicitly disables pubkey authentication when using password authentication to prevent "too many authentication failures" errors
+   - Adds retry mechanism for SSH connections with configurable number of attempts
+   - Provides better error messages for authentication failures
+
+2. **Repository Handling**:
+   - Detects outdated Raspberry Pi OS versions (like "stretch")
+   - Updates repository sources to use archive repositories for outdated OS versions
+   - Prevents 404 errors when accessing outdated repositories
+
+3. **SSL Certificate Verification**:
+   - Disables SSL certificate verification for pip installations using `--trusted-host` flags
+   - Resolves SSL certificate verification failures when installing Python packages
+   - Adds trusted hosts for both PyPI and piwheels repositories
+
+4. **Improved File Transfer**:
+   - Adds retry mechanism for SCP file transfers
+   - Verifies successful file transfers before proceeding
+   - Creates a local service file and transfers it directly to avoid path issues
+
+5. **Error Handling and Recovery**:
+   - Adds retry mechanisms for package installation and unitapi installation
+   - Continues installation even if some steps fail, with appropriate warnings
+   - Provides more detailed error messages and status updates
+
+## Usage
+
+### Basic Installation
+
+```bash
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry
+```
+
+### Using SSH Key Authentication
+
+```bash
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --identity ~/.ssh/id_rsa
+```
+
+### Controlling the Service
+
+```bash
+# Start the service
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command start
+
+# Stop the service
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command stop
+
+# Restart the service
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command restart
+
+# Check service status
+./scripts/install_remote_keyboard_server_fixed.sh --host 192.168.1.100 --password raspberry --service-command status
+```
+
+## Client Configuration
+
+After installing the Remote Keyboard Server on your Raspberry Pi, you need to configure the client to connect to it.
+
+1. Update your `.env` file with the following:
+
+```
+RPI_HOST=192.168.1.100  # Replace with your Raspberry Pi's IP address
+RPI_USER=pi             # Replace with your Raspberry Pi username
+RPI_PASSWORD=raspberry  # Replace with your Raspberry Pi password
+```
+
+2. Run the client:
+
+```bash
+python examples/remote_keyboard_control_fixed.py
+```
+
+> **Note:** We recommend using the fixed version of the client script (`remote_keyboard_control_fixed.py`) instead of the original version (`remote_keyboard_control.py`). The fixed version includes better error handling, connection checking, and troubleshooting guidance.
+
+### Client Script Options
+
+The remote keyboard control client supports several command-line options:
+
+```bash
+python examples/remote_keyboard_control_fixed.py --help
+```
+
+Common options include:
+
+- `--check-connection`: Test the connection to the remote server
+- `--list`: List available keyboards on the remote device
+- `--device-id DEVICE_ID`: Specify a keyboard device ID to control
+- `--text TEXT`: Type the specified text on the remote keyboard
+- `--key KEY`: Press a specific key on the remote keyboard
+- `--hotkey KEYS`: Press a hotkey combination (comma-separated keys, e.g., ctrl,s)
+
+## Troubleshooting
+
+### SSH Connection Issues
+
+If you're experiencing SSH connection issues:
+
+1. Verify that the Raspberry Pi is reachable on the network:
+   ```bash
+   ping <raspberry_pi_ip>
+   ```
+
+2. Check that SSH is enabled on the Raspberry Pi:
+   ```bash
+   ssh <username>@<raspberry_pi_ip>
+   ```
+
+3. If using password authentication, ensure the password is correct.
+
+4. If using key-based authentication, ensure the key file exists and has the correct permissions:
+   ```bash
+   chmod 600 ~/.ssh/id_rsa
+   ```
+
+### Package Installation Issues
+
+If package installation fails:
+
+1. Check the Raspberry Pi's internet connection.
+
+2. Try updating the package lists manually:
+   ```bash
+   sudo apt-get update
+   ```
+
+3. If using an outdated Raspberry Pi OS version, consider upgrading to a newer version.
+
+### Service Issues
+
+If the service fails to start:
+
+1. Check the service status:
+   ```bash
+   sudo systemctl status unitapi-keyboard.service
+   ```
+
+2. Check the service logs:
+   ```bash
+   journalctl -u unitapi-keyboard.service
+   ```
+
+3. Verify that the Python virtual environment was created correctly:
+   ```bash
+   ls -la /home/pi/unitapi/venv/bin/python
+   ```
+
+## Python Installation Alternative
+
+If you prefer using Python instead of Bash for installation, you can use the `scripts/install_remote_keyboard_server.py` script:
+
+```bash
+python scripts/install_remote_keyboard_server.py --host 192.168.1.100 --password raspberry
+```
+
+This Python script provides similar functionality to the Bash script but may be more suitable for environments where Python is preferred over Bash.
 
 # Raspberry Pi Microphone Examples for UnitAPI [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/rpi/mic/README.md)
 
@@ -5993,6 +5633,305 @@ The speaker examples support the following audio formats:
 4. **Text-to-Speech Output**: Combine with a text-to-speech service to create voice announcements
 5. **Interactive Projects**: Add audio feedback to interactive projects
 
+# Speaker Playback Fix [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/speaker_playback_fix.md)
+
+## Issue
+
+The UnitAPI speaker playback examples were encountering several issues:
+
+1. `speaker_playback.py` was failing with "No speakers found" even when the device discovery service was running.
+2. `speaker_audio_playback.py` was encountering ALSA and JACK errors when trying to use the default audio device.
+
+## Root Causes
+
+1. **WebSocket Communication Issue**: The `UnitAPIClient` in `src/unitapi/core/client.py` was not actually connecting to the WebSocket server. Instead, it was returning mock responses for testing purposes.
+
+2. **Default Audio Device Selection**: The `speaker_audio_playback.py` script was trying to use `get_default_output_device_info()` which might not be available on all systems or might return an invalid device index.
+
+## Solutions
+
+### 1. Fixed Client Implementation
+
+A new client implementation (`client_fixed.py`) was created that properly connects to the WebSocket server using the websockets library. This allows the client to communicate with the device discovery service.
+
+```python
+async def send_command(self, command: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Send a command to the server using WebSockets.
+    """
+    try:
+        async with websockets.connect(self.ws_url) as websocket:
+            # Convert command to JSON
+            command_json = json.dumps(command)
+            
+            # Send command
+            await websocket.send(command_json)
+            
+            # Wait for response
+            response_json = await websocket.recv()
+            
+            # Parse response
+            response = json.loads(response_json)
+            return response
+    except Exception as e:
+        self.logger.error(f"WebSocket communication error: {e}")
+        return {"status": "error", "message": f"Communication error: {str(e)}"}
+```
+
+### 2. Improved Audio Device Selection
+
+The audio playback scripts were modified to use a more robust method for selecting the default audio device:
+
+```python
+# Find the first available output device instead of using get_default_output_device_info()
+info = p.get_host_api_info_by_index(0)
+num_devices = info.get('deviceCount')
+
+# Find output devices
+output_devices = []
+for i in range(num_devices):
+    device_info = p.get_device_info_by_index(i)
+    if device_info.get('maxOutputChannels') > 0:
+        output_devices.append((i, device_info.get('name')))
+
+if not output_devices:
+    self.logger.error("No output devices found")
+    p.terminate()
+    return False
+
+# Use the first output device
+device_index = output_devices[0][0]
+self.logger.info(f"Using default output device (index: {device_index})")
+```
+
+## Fixed Scripts
+
+1. `src/unitapi/core/client_fixed.py` - A fixed version of the UnitAPI client with proper WebSocket support.
+2. `examples/speaker_playback_fixed.py` - A fixed version of the speaker playback example.
+3. `examples/speaker_audio_playback_fixed.py` - A fixed version of the speaker audio playback example.
+
+## Usage
+
+### Running the Device Discovery Service
+
+Before using the speaker examples, you need to start the device discovery service:
+
+```bash
+python examples/device_discovery.py --debug
+```
+
+### Using the Fixed Speaker Playback Example
+
+```bash
+# Using the WebSocket client (requires device discovery service)
+python examples/speaker_playback_fixed.py --debug
+
+# Using local playback (doesn't require device discovery service)
+python examples/speaker_playback_fixed.py --local --debug
+
+# Specifying a specific device index
+python examples/speaker_playback_fixed.py --local --device-index 0 --debug
+```
+
+### Using the Fixed Speaker Audio Playback Example
+
+```bash
+# Play a tone on the default device
+python examples/speaker_audio_playback_fixed.py --debug
+
+# Specifying a specific device index
+python examples/speaker_audio_playback_fixed.py --device 0 --debug
+
+# List available speakers
+python examples/speaker_audio_playback_fixed.py --list --debug
+
+# Play on all available speakers
+python examples/speaker_audio_playback_fixed.py --all-devices --debug
+```
+
+## Notes
+
+- The ALSA warnings about "Unknown PCM cards" and the JACK errors are not critical and don't affect the functionality of the scripts.
+- If you're still having issues with the WebSocket connection, make sure the device discovery service is running and check if the WebSocket server is listening on the expected port (7891 by default).
+- The local playback option (`--local` for `speaker_playback_fixed.py` or direct device specification for `speaker_audio_playback_fixed.py`) works independently of the device discovery service.
+
+# UnitAPI Docker Example: Remote Speaker Agent [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/docker/README.md)
+
+This example demonstrates how to set up a virtual speaker server on one machine (PC1) and a client on another machine (PC2) using Docker Compose. The client will install the UnitAPI speaker agent on the server using SSH and then connect to it to control the virtual speakers.
+
+## Overview
+
+This Docker Compose setup creates two containers:
+
+1. **speaker-server**: A container that runs virtual speakers and exposes them through the UnitAPI protocol.
+2. **speaker-client**: A container that connects to the speaker server, installs the UnitAPI speaker agent using SSH, and provides a client interface to control the speakers.
+
+This setup simulates a real-world scenario where you have a remote PC with speakers that you want to control from another PC.
+
+## Prerequisites
+
+- Docker and Docker Compose installed on your machine
+- Basic knowledge of Docker and Docker Compose
+- Understanding of the UnitAPI speaker agent
+
+## Directory Structure
+
+```
+docker/
+├── docker-compose.yml         # Docker Compose configuration
+├── README.md                  # This file
+├── speaker-server/            # Server container files
+│   ├── Dockerfile             # Server container definition
+│   ├── entrypoint.sh          # Server startup script
+│   ├── virtual_speaker.py     # Virtual speaker implementation
+│   └── data/                  # Shared volume for server data
+└── speaker-client/            # Client container files
+    ├── Dockerfile             # Client container definition
+    ├── entrypoint.sh          # Client startup script
+    ├── client.py              # Speaker client implementation
+    └── data/                  # Shared volume for client data
+```
+
+## How It Works
+
+1. The `speaker-server` container creates virtual speakers and exposes them through the UnitAPI protocol.
+2. The `speaker-client` container connects to the server via SSH and installs the UnitAPI speaker agent.
+3. The client then connects to the server's UnitAPI interface to control the virtual speakers.
+
+This simulates the process of installing the UnitAPI speaker agent on a remote PC and controlling its speakers.
+
+## Usage
+
+### Starting the Containers
+
+```bash
+# Navigate to the docker directory
+cd examples/docker
+
+# Start the containers
+docker-compose up -d
+
+# View the logs
+docker-compose logs -f
+```
+
+### Accessing the Client Container
+
+```bash
+# Access the client container shell
+docker exec -it unitapi-speaker-client bash
+
+# Inside the container, you can use the client script
+python /opt/unitapi/client.py --host 172.28.1.2 --list
+python /opt/unitapi/client.py --host 172.28.1.2 --test
+```
+
+### Accessing the Server Container
+
+```bash
+# Access the server container shell
+docker exec -it unitapi-speaker-server bash
+
+# Inside the container, you can check the speaker agent status
+unitapi-speaker --status
+unitapi-speaker --list
+```
+
+### Stopping the Containers
+
+```bash
+# Stop the containers
+docker-compose down
+```
+
+## Customization
+
+You can customize the setup by modifying the following files:
+
+- `docker-compose.yml`: Change the network configuration, port mappings, etc.
+- `speaker-server/virtual_speaker.py`: Modify the virtual speaker implementation.
+- `speaker-client/client.py`: Customize the client behavior.
+
+### Environment Variables
+
+The Docker Compose setup supports the following environment variables:
+
+- `VIRTUAL_SPEAKERS`: Number of virtual speakers to create on the server (default: 2)
+- `SERVER_HOST`: Hostname or IP address of the server (default: 172.28.1.2)
+- `SERVER_PORT`: Port number of the UnitAPI server (default: 7890)
+
+You can set these variables in the `docker-compose.yml` file or pass them when starting the containers:
+
+```bash
+VIRTUAL_SPEAKERS=4 docker-compose up -d
+```
+
+## Testing the Setup
+
+Once the containers are running, you can test the setup by:
+
+1. Listing the available speakers:
+   ```bash
+   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --list
+   ```
+
+2. Testing all speakers:
+   ```bash
+   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --test
+   ```
+
+3. Testing a specific speaker:
+   ```bash
+   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --device virtual_speaker_1
+   ```
+
+4. Monitoring the speakers:
+   ```bash
+   docker exec -it unitapi-speaker-client python /opt/unitapi/client.py --host 172.28.1.2 --monitor --interval 30
+   ```
+
+## Troubleshooting
+
+If you encounter issues with the setup, check the following:
+
+1. Make sure the containers are running:
+   ```bash
+   docker-compose ps
+   ```
+
+2. Check the container logs:
+   ```bash
+   docker-compose logs -f
+   ```
+
+3. Verify the network connectivity between the containers:
+   ```bash
+   docker exec -it unitapi-speaker-client ping 172.28.1.2
+   ```
+
+4. Check if the SSH server is running on the server container:
+   ```bash
+   docker exec -it unitapi-speaker-server service ssh status
+   ```
+
+5. Verify the UnitAPI server is running on the server container:
+   ```bash
+   docker exec -it unitapi-speaker-server ps aux | grep unitapi
+   ```
+
+## Extending the Example
+
+You can extend this example to include more features:
+
+1. Add more virtual speakers by changing the `VIRTUAL_SPEAKERS` environment variable.
+2. Implement a web interface for controlling the speakers.
+3. Add support for playing audio files from the client to the server.
+4. Integrate with other UnitAPI devices like microphones or cameras.
+
+## Conclusion
+
+This Docker example demonstrates how to use the UnitAPI speaker agent to control speakers on a remote machine. It shows the process of installing the agent via SSH and then using it to control the speakers. This can be used as a starting point for building more complex applications that involve remote audio control.
+
 ```bash [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/tree.md)
 tree -L 4 src
 ```
@@ -6040,7 +5979,6 @@ tree -L 4 examples
 ```
 
 ```bash
-src
 examples
 ├── camera_capture.py
 ├── camera_frame_capture.py
@@ -6071,14 +6009,20 @@ examples
 │   │   ├── camera_frame_client.py
 │   │   ├── camera_server.py
 │   │   ├── README.md
+│   │   ├── remote_camera_capture.py
 │   │   ├── remote_camera_client.py
+│   │   ├── remote_camera_frame_capture.py
 │   │   ├── remote_camera_frame_client.py
 │   │   └── screenshot_client.py
 │   ├── keyboard
 │   │   ├── keyboard_client.py
 │   │   ├── keyboard_server.py
 │   │   ├── README.md
-│   │   └── remote_keyboard_client.py
+│   │   ├── README_remote_keyboard_fixed.md
+│   │   ├── README_remote_keyboard.md
+│   │   ├── remote_keyboard_client.py
+│   │   ├── remote_keyboard_control_fixed.py
+│   │   └── remote_keyboard_control.py
 │   ├── microphone
 │   │   ├── microphone_input_client.py
 │   │   ├── microphone_recording_client.py
@@ -6088,6 +6032,7 @@ examples
 │   │   ├── device_discovery.py
 │   │   ├── input_devices.py
 │   │   ├── README.md
+│   │   ├── remote_control.py
 │   │   └── ssh_connector.py
 │   ├── mouse
 │   │   ├── mouse_client.py
@@ -6097,23 +6042,13 @@ examples
 │   ├── README.md
 │   └── speaker
 │       ├── README.md
+│       ├── remote_speaker_agent.md
 │       ├── speaker_audio_playback_fixed.py
 │       ├── speaker_audio_playback.py
 │       ├── speaker_client.py
 │       ├── speaker_playback_fixed.py
 │       ├── speaker_playback.py
 │       └── speaker_server.py
-├── README_remote_keyboard_fixed.md
-├── README_remote_keyboard.md
-├── remote_camera_capture.py
-├── remote_camera_frame_capture.py
-├── remote_control.py
-├── remote_keyboard_control_fixed.py
-├── remote_keyboard_control.md
-├── remote_keyboard_control.py
-├── remote_keyboard_server_installation.md
-├── remote_keyboard_server.py
-├── remote_speaker_agent.md
 ├── rpi
 │   ├── camera
 │   │   ├── camera_client.py
@@ -6128,7 +6063,9 @@ examples
 │   ├── keyboard
 │   │   ├── keyboard_client.py
 │   │   ├── keyboard_server.py
-│   │   └── README.md
+│   │   ├── README.md
+│   │   ├── remote_keyboard_server_installation.md
+│   │   └── remote_keyboard_server.py
 │   ├── mic
 │   │   ├── microphone_client.py
 │   │   ├── microphone_server.py
@@ -6172,134 +6109,6 @@ examples
   });
   mermaid.init(undefined, '.language-mermaid');
 </script>
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/#)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/find)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/examples/)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/-type)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/f)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/-name)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/"*.md")
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/|)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/sort)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/>>)
-
-
-docs/index.md [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/flatedit.txt)
-docs/device_types.md
-docs/usage.md
-docs/installation.md
-docs/protocols.md
-docs/security.md
-docs/ssh_tools.md
-examples/docker/README.md
-examples/examples.md
-examples/pc/camera/README.md
-examples/pc/keyboard/README.md
-examples/pc/microphone/README.md
-examples/pc/misc/README.md
-examples/pc/mouse/README.md
-examples/pc/README.md
-examples/pc/speaker/README.md
-examples/README_remote_keyboard_fixed.md
-examples/README_remote_keyboard.md
-examples/remote_keyboard_control.md
-examples/remote_keyboard_server_installation.md
-examples/remote_speaker_agent.md
-examples/rpi/camera/README.md
-examples/rpi/gpio/README.md
-examples/rpi/keyboard/README.md
-examples/rpi/mic/README.md
-examples/rpi/mouse/README.md
-examples/rpi/README.md
-examples/rpi/respeaker/README.md
-examples/rpi/speaker/README.md
-docs/tree.md
-docs/footer.md
-# find examples/ -type f -name "*.md" | sort >> flatedit.txt
-# find docs/ -type f -name "*.md" | sort >> flatedit.txt
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/#)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/find)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/docs/)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/-type)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/f)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/-name)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/"*.md")
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/|)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/sort)
-
-
- [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/>>)
-
-
-docs/index.md [<span style='font-size:20px;'>&#x270D;</span>](git@github.com:UnitApi/python/edit/main/flatedit.txt)
-docs/device_types.md
-docs/usage.md
-docs/installation.md
-docs/protocols.md
-docs/security.md
-docs/ssh_tools.md
-examples/docker/README.md
-examples/examples.md
-examples/pc/camera/README.md
-examples/pc/keyboard/README.md
-examples/pc/microphone/README.md
-examples/pc/misc/README.md
-examples/pc/mouse/README.md
-examples/pc/README.md
-examples/pc/speaker/README.md
-examples/README_remote_keyboard_fixed.md
-examples/README_remote_keyboard.md
-examples/remote_keyboard_control.md
-examples/remote_keyboard_server_installation.md
-examples/remote_speaker_agent.md
-examples/rpi/camera/README.md
-examples/rpi/gpio/README.md
-examples/rpi/keyboard/README.md
-examples/rpi/mic/README.md
-examples/rpi/mouse/README.md
-examples/rpi/README.md
-examples/rpi/respeaker/README.md
-examples/rpi/speaker/README.md
-docs/tree.md
-docs/footer.md
-# find examples/ -type f -name "*.md" | sort >> flatedit.txt
-# find docs/ -type f -name "*.md" | sort >> flatedit.txt
 
 ---
 + Modular Documentation made possible by the [FlatEdit](http://www.flatedit.com) project.
