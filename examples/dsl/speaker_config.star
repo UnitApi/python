@@ -55,7 +55,7 @@ music_playback = pipeline(
     source = music_source.id,
     target = living_room_speaker.id,
     steps = [
-        step("load", source="/music/playlist.m3u"),
+        step("load", source=music_source.id),
         step("process", equalizer_preset="music"),
         step("play", volume=0.7, repeat=True)
     ]
@@ -92,12 +92,20 @@ whole_house_audio = create_multiroom_pipeline(
     volume = 0.5
 )
 
+# Define a sound source device for alarms
+alarm_source = device(
+    id = "alarm-source",
+    type = "custom",
+    capabilities = ["storage", "audio"]
+)
+
 # Alarm system pipeline
 alarm_system = pipeline(
     name = "alarm-system",
+    source = alarm_source.id,
     target = [living_room_speaker.id, kitchen_speaker.id],
     steps = [
-        step("load", source="/sounds/alarm.wav"),
+        step("load", source=alarm_source.id),
         step("process", volume_boost=True),
         step("play", volume=1.0, repeat=True, interrupt_current=True)
     ]

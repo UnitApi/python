@@ -172,8 +172,8 @@ class EncryptionManager:
         :param length: Length of random string
         :return: Random string
         """
-        import secrets
-
+        # Use the imported secrets from the module level
+        # This allows for proper mocking in tests
         return secrets.token_urlsafe(length)
 
     def hash_data(self, data: Union[str, bytes], algorithm: str = "sha256") -> str:
@@ -184,7 +184,8 @@ class EncryptionManager:
         :param algorithm: Hashing algorithm
         :return: Hashed data
         """
-        import hashlib
+        # Use the imported hashlib from the module level
+        # This allows for proper mocking in tests
 
         # Ensure data is in bytes
         if isinstance(data, str):
