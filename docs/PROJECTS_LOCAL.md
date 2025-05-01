@@ -28,7 +28,6 @@
 + [examples # Raspberry Pi Examples for UnitAPI](file:///home/tom/github/UnitApi/python/examples/index.html)
 + [examples # Raspberry Pi ReSpeaker Examples for UnitAPI](file:///home/tom/github/UnitApi/python/examples/index.html)
 + [examples # Raspberry Pi Speaker Examples for UnitAPI](file:///home/tom/github/UnitApi/python/examples/index.html)
-+ [examples # Speaker Playback Fix](file:///home/tom/github/UnitApi/python/examples/index.html)
 + [docs ```bash](file:///home/tom/github/UnitApi/python/docs/index.html)
 + [docs ](file:///home/tom/github/UnitApi/python/docs/index.html)
 + [# ](file:///home/tom/github/UnitApi/python/#/index.html)
