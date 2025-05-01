@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.25] - 2025-05-01
+
+### Added
+- Changes in docs/dsl.md
+- Changes in examples/config.yaml
+- Changes in examples/dsl/README.md
+- Changes in examples/dsl/camera_config.yaml
+- Changes in examples/dsl/gpio_config.hcl
+- Changes in examples/dsl/input_devices.ua
+- Changes in examples/dsl/microphone_config.hcl
+- Changes in examples/dsl/multi_device_simple.ua
+- Changes in examples/dsl/multi_device_workflow.star
+- Changes in examples/dsl/speaker_config.star
+- Changes in examples/dsl/touch_gamepad_config.yaml
+- Changes in examples/dsl_example.py
+- Changes in src/unitapi/cli/__init__.py
+- Changes in src/unitapi/cli/dsl_commands.py
+- Changes in src/unitapi/config/__init__.py
+- Changes in src/unitapi/config/loader.py
+- Changes in src/unitapi/dsl/README.md
+- Changes in src/unitapi/dsl/__init__.py
+- Changes in src/unitapi/dsl/base.py
+- Changes in src/unitapi/dsl/examples/__init__.py
+- Changes in src/unitapi/dsl/examples/advanced/README.md
+- Changes in src/unitapi/dsl/examples/advanced/__init__.py
+- Changes in src/unitapi/dsl/examples/advanced/base_config.yaml
+- Changes in src/unitapi/dsl/examples/advanced/devices.hcl
+- Changes in src/unitapi/dsl/examples/advanced/multi_format_example.py
+- Changes in src/unitapi/dsl/examples/advanced/pipelines.star
+- Changes in src/unitapi/dsl/examples/config.hcl
+- Changes in src/unitapi/dsl/examples/config.star
+- Changes in src/unitapi/dsl/examples/config.yaml
+- Changes in src/unitapi/dsl/examples/simple.ua
+- Changes in src/unitapi/dsl/parsers/__init__.py
+- Changes in src/unitapi/dsl/parsers/hcl_parser.py
+- Changes in src/unitapi/dsl/parsers/simple_parser.py
+- Changes in src/unitapi/dsl/parsers/starlark_parser.py
+- Changes in src/unitapi/dsl/parsers/yaml_parser.py
+- Changes in src/unitapi/dsl/runtime/__init__.py
+- Changes in src/unitapi/dsl/runtime/context.py
+- Changes in src/unitapi/dsl/runtime/executor.py
+- Changes in src/unitapi/dsl/validators/__init__.py
+- Changes in src/unitapi/dsl/validators/schema.py
+- Changes in tests/test_dsl.py
+- Changes in tests/test_dsl_examples.py
+
+### Removed
+- Changes in remove_duplicated_files.sh
+
 ## [0.1.24] - 2025-05-01
 
 ### Added

@@ -1,0 +1,128 @@
+version: "1.0"
+
+extensions:
+  - !extension
+    name: touchscreen
+    version: ">=1.0.0"
+    config:
+      resolution: "1920x1080"
+      multi_touch: true
+      pressure_sensitivity: true
+      
+  - !extension
+    name: gamepad
+    version: ">=1.0.0"
+    config:
+      controller_type: "xbox"
+      wireless: true
+      rumble: true
+      
+  - !extension
+    name: input_processing
+    version: ">=1.0.0"
+    config:
+      gesture_recognition: true
+      button_mapping: true
+
+devices:
+  - !device
+    id: "tablet-touchscreen"
+    device_type: "touchscreen"
+    capabilities: ["touch", "multi_touch", "gestures", "pressure_sensitivity"]
+    
+  - !device
+    id: "phone-touchscreen"
+    device_type: "mobile_touchscreen"
+    capabilities: ["touch", "multi_touch", "gestures"]
+    
+  - !device
+    id: "xbox-controller"
+    device_type: "gamepad"
+    capabilities: ["buttons", "triggers", "joysticks", "rumble"]
+    
+  - !device
+    id: "custom-controller"
+    device_type: "custom_gamepad"
+    capabilities: ["buttons", "triggers", "joysticks", "gyroscope", "accelerometer"]
+
+pipelines:
+  - !pipeline
+    name: "touch-gestures"
+    source: "tablet-touchscreen"
+    steps:
+      - action: "capture"
+        params:
+          events: ["tap", "swipe", "pinch", "rotate"]
+      - action: "recognize"
+        params:
+          gestures: ["zoom", "scroll", "rotate", "three_finger_swipe"]
+      - action: "map"
+        params:
+          zoom: "content_zoom"
+          scroll: "page_scroll"
+          rotate: "image_rotate"
+          three_finger_swipe: "app_switch"
+      - action: "execute"
+        params:
+          target: "active_application"
+          
+  - !pipeline
+    name: "drawing-pipeline"
+    source: "tablet-touchscreen"
+    steps:
+      - action: "capture"
+        params:
+          events: ["touch_move"]
+          pressure: true
+      - action: "process"
+        params:
+          smoothing: true
+          pressure_mapping: "brush_size"
+      - action: "render"
+        params:
+          canvas: "drawing_app"
+          brush_type: "variable_width"
+          
+  - !pipeline
+    name: "gamepad-control"
+    source: "xbox-controller"
+    steps:
+      - action: "capture"
+        params:
+          events: ["button_press", "trigger", "joystick_move"]
+      - action: "map"
+        params:
+          a_button: "jump"
+          b_button: "action"
+          x_button: "reload"
+          y_button: "switch_weapon"
+          left_trigger: "aim"
+          right_trigger: "fire"
+          left_joystick: "movement"
+          right_joystick: "camera"
+      - action: "execute"
+        params:
+          target: "game_application"
+          latency_optimization: true
+          
+  - !pipeline
+    name: "motion-control"
+    source: "custom-controller"
+    steps:
+      - action: "capture"
+        params:
+          events: ["gyroscope", "accelerometer"]
+      - action: "process"
+        params:
+          smoothing: true
+          calibration: true
+      - action: "map"
+        params:
+          tilt_forward: "accelerate"
+          tilt_backward: "brake"
+          tilt_left: "steer_left"
+          tilt_right: "steer_right"
+      - action: "feedback"
+        params:
+          collision: "strong_rumble"
+          terrain: "variable_rumble"

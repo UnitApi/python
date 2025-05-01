@@ -16,6 +16,7 @@ from .core.config import ConfigManager
 from .core.logging import LoggingManager
 from .core.mcp import MCPBroker, MCPClient
 from .core.utils import check_dependencies, get_system_info, ensure_dir
+from .cli import cli as dsl_cli
 
 from .device_managers.local_devices import LocalDevicesManager
 from .device_managers.network_devices import NetworkDevicesManager
@@ -164,14 +165,38 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="unitapi - Real-Time Annotation and Stream Processing"
     )
+    
+    # Główne argumenty
     parser.add_argument("-c", "--config", help="Ścieżka do pliku konfiguracyjnego")
+    
+    # Subkomendy
+    subparsers = parser.add_subparsers(dest="command", help="Dostępne komendy")
+    
+    # Subkomenda DSL
+    dsl_parser = subparsers.add_parser("dsl", help="Komendy DSL")
+    dsl_parser.add_argument("dsl_args", nargs="*", help="Argumenty dla komend DSL")
+    
     return parser.parse_args()
+
+def main():
+    """
+    Główna funkcja uruchomieniowa.
+    """
+    # Parsowanie argumentów
+    args = parse_args()
+    
+    # Obsługa komend DSL
+    if args.command == "dsl":
+        # Przekazanie argumentów do CLI DSL
+        import sys
+        sys.argv = [sys.argv[0]] + args.dsl_args
+        dsl_cli()
+        return
+    
+    # Uruchomienie systemu
+    app = unitapi(config_path=args.config)
+    app.run()
 
 
 if __name__ == "__main__":
-    # Parsowanie argumentów
-    args = parse_args()
-
-    # Uruchomienie systemu
-    unitapi = unitapi(config_path=args.config)
-    unitapi.run()
+    main()

@@ -1,0 +1,54 @@
+# UnitAPI Configuration Example
+version: "1.0"
+
+# Extensions
+extensions:
+  - name: keyboard
+    type: extension
+    version: ">=1.0.0"
+    config:
+      layout: "us"
+      
+  - name: mouse
+    type: extension
+    version: ">=1.0.0"
+    config:
+      sensitivity: 1.5
+      
+  - name: display
+    type: extension
+    version: ">=1.0.0"
+    config:
+      resolution: "1920x1080"
+
+# Devices
+devices:
+  - id: "pc-main"
+    type: device
+    device_type: "computer"
+    capabilities: ["keyboard", "mouse", "display"]
+    
+  - id: "rpi-remote"
+    type: device
+    device_type: "raspberry_pi"
+    capabilities: ["gpio", "camera"]
+
+# Pipelines
+pipelines:
+  - name: "remote-control"
+    type: pipeline
+    source: "pc-main"
+    target: "rpi-remote"
+    steps:
+      - action: "capture"
+        type: step
+        params:
+          device: "keyboard"
+      - action: "filter"
+        type: step
+        params:
+          keys: ["ctrl", "alt", "f1-f12"]
+      - action: "forward"
+        type: step
+        params:
+          destination: "tcp://192.168.1.100:5000"

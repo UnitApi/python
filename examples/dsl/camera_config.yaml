@@ -1,0 +1,62 @@
+version: "1.0"
+
+extensions:
+  - !extension
+    name: camera
+    version: ">=1.0.0"
+    config:
+      resolution: "1080p"
+      fps: 30
+      
+  - !extension
+    name: image_processing
+    version: ">=1.0.0"
+    config:
+      models: ["object_detection", "face_recognition"]
+
+devices:
+  - !device
+    id: "pc-camera"
+    device_type: "camera"
+    capabilities: ["image_capture", "video_streaming"]
+    
+  - !device
+    id: "rpi-camera"
+    device_type: "raspberry_pi_camera"
+    capabilities: ["image_capture", "video_streaming", "night_vision"]
+
+pipelines:
+  - !pipeline
+    name: "security-monitoring"
+    source: "rpi-camera"
+    target: "pc-camera"
+    steps:
+      - action: "capture"
+        params:
+          mode: "continuous"
+          interval: 5  # seconds
+      - action: "detect"
+        params:
+          objects: ["person", "vehicle"]
+      - action: "filter"
+        params:
+          confidence: 0.7
+      - action: "alert"
+        params:
+          method: "email"
+          recipients: ["security@example.com"]
+          
+  - !pipeline
+    name: "timelapse-creator"
+    source: "pc-camera"
+    steps:
+      - action: "capture"
+        params:
+          mode: "interval"
+          interval: 60  # seconds
+          duration: 3600  # 1 hour
+      - action: "process"
+        params:
+          operation: "compile_timelapse"
+          output: "timelapse.mp4"
+          fps: 24

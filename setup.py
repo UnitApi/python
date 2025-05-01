@@ -69,6 +69,10 @@ setup(
         "grpcio-tools>=1.62.0",
         "paho-mqtt>=1.6.0",
         "redis>=4.0.0",
+        
+        # DSL support
+        "pydantic>=1.9.0",
+        "click>=8.0.0",
     ],
     extras_require={
         "dev": [
@@ -88,6 +92,11 @@ setup(
             "types-PyYAML>=6.0.1",
             "types-psutil>=5.9.0",
         ],
+        "dsl": [
+            # DSL format support
+            "python-hcl2>=3.0.5",
+            "starlark>=0.4.0",
+        ],
     },
     project_urls={
         "Repository": "https://github.com/unitapi/python",
@@ -100,6 +109,7 @@ setup(
     entry_points={
         'console_scripts': [
             'unitapi=unitapi.main:main',
+            'unitapi-dsl=unitapi.cli:main',
         ],
     },
     license="Apache-2.0",

@@ -1,0 +1,49 @@
+# Base configuration for UnitAPI
+version: "1.0"
+
+# Global extensions used by all devices
+extensions:
+  - !extension
+    name: keyboard
+    version: ">=1.0.0"
+    config:
+      layout: "us"
+      
+  - !extension
+    name: mouse
+    version: ">=1.0.0"
+    config:
+      sensitivity: 1.5
+      
+  - !extension
+    name: display
+    version: ">=1.0.0"
+    config:
+      resolution: "1920x1080"
+      
+  - !extension
+    name: camera
+    version: ">=1.0.0"
+    config:
+      resolution: "1280x720"
+      fps: 30
+      
+  - !extension
+    name: gpio
+    version: ">=1.0.0"
+    
+  - !extension
+    name: sensors
+    version: ">=1.0.0"
+    config:
+      polling_rate: 1000  # ms
+
+# Core devices - additional devices will be loaded from devices.hcl
+devices:
+  - !device
+    id: "pc-main"
+    device_type: "computer"
+    capabilities: ["keyboard", "mouse", "display", "camera"]
+
+# Pipelines will be dynamically generated in pipelines.star
+pipelines: []

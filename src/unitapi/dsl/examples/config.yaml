@@ -1,0 +1,41 @@
+version: "1.0"
+
+extensions:
+  - !extension
+    name: keyboard
+    version: ">=1.0.0"
+    config:
+      layout: "us"
+      
+  - !extension
+    name: mouse
+    version: ">=1.0.0"
+    config:
+      sensitivity: 1.5
+
+devices:
+  - !device
+    id: "pc-main"
+    device_type: "computer"
+    capabilities: ["keyboard", "mouse", "display"]
+    
+  - !device
+    id: "rpi-remote"
+    device_type: "raspberry_pi"
+    capabilities: ["gpio", "camera"]
+
+pipelines:
+  - !pipeline
+    name: "remote-control"
+    source: "pc-main"
+    target: "rpi-remote"
+    steps:
+      - action: "capture"
+        params:
+          device: "keyboard"
+      - action: "filter"
+        params:
+          keys: ["ctrl", "alt", "f1-f12"]
+      - action: "forward"
+        params:
+          destination: "tcp://192.168.1.100:5000"
