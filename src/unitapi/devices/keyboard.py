@@ -4,9 +4,37 @@ Keyboard device implementation with physical keyboard control using PyAutoGUI.
 
 import asyncio
 import logging
+import os
 from typing import Dict, Any, Optional, List, Set
 
-import pyautogui
+# Check if we should skip tkinter-dependent functionality
+SKIP_TKINTER = os.environ.get("UNITAPI_SKIP_TKINTER_TESTS", "0") == "1"
+
+try:
+    import pyautogui
+except ImportError as e:
+    if SKIP_TKINTER:
+        # Create a mock pyautogui module for testing when tkinter is not available
+        class MockPyAutoGUI:
+            def keyDown(self, *args, **kwargs):
+                pass
+
+            def keyUp(self, *args, **kwargs):
+                pass
+
+            def press(self, *args, **kwargs):
+                pass
+
+            def write(self, *args, **kwargs):
+                pass
+
+            def hotkey(self, *args, **kwargs):
+                pass
+
+        pyautogui = MockPyAutoGUI()
+    else:
+        # Re-raise the import error if we're not in test mode
+        raise e
 
 from .base import InputDevice, DeviceStatus
 

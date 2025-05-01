@@ -4,19 +4,27 @@ Mouse device implementation with physical mouse control using PyAutoGUI.
 
 import asyncio
 import logging
+import os
 import sys
 from typing import Dict, Any, Optional, Tuple
+
+# Check if we should skip tkinter-dependent functionality
+SKIP_TKINTER = os.environ.get("UNITAPI_SKIP_TKINTER_TESTS", "0") == "1"
 
 # Try to import pyautogui, but provide a mock implementation if it's not available
 # This allows tests to run without requiring tkinter to be installed
 try:
     import pyautogui
+
     PYAUTOGUI_AVAILABLE = True
-except (ImportError, ModuleNotFoundError, SystemExit):
+except (ImportError, ModuleNotFoundError, SystemExit) as e:
     # Create a mock pyautogui module for testing
     # SystemExit is caught here because mouseinfo (imported by pyautogui)
     # calls sys.exit() when tkinter is not available
     PYAUTOGUI_AVAILABLE = False
+
+    if not SKIP_TKINTER:
+        logging.getLogger(__name__).warning(f"PyAutoGUI import failed: {e}")
 
     class PyAutoGUIMock:
         """Mock implementation of PyAutoGUI for testing."""
