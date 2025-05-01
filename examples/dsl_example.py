@@ -20,6 +20,7 @@ from src.unitapi import UnitAPI
 from src.unitapi.config.loader import ConfigLoader
 from src.unitapi.dsl.validators.schema import validate_config_with_details
 from src.unitapi.dsl.runtime.executor import DSLExecutor
+from src.unitapi.dsl.parsers.starlark_parser_fixed import StarlarkParser
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

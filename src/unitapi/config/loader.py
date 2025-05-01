@@ -12,7 +12,7 @@ class ConfigLoader:
         ".yaml": "unitapi.dsl.parsers.yaml_parser.YAMLParser",
         ".yml": "unitapi.dsl.parsers.yaml_parser.YAMLParser",
         ".hcl": "unitapi.dsl.parsers.hcl_parser.HCLParser",
-        ".star": "unitapi.dsl.parsers.starlark_parser.StarlarkParser",
+        ".star": "unitapi.dsl.parsers.starlark_parser_fixed.StarlarkParser",
         ".ua": "unitapi.dsl.parsers.simple_parser.SimpleDSLParser",
     }
 

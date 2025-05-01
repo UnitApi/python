@@ -8,7 +8,7 @@ pydantic>=1.9.0
 click>=8.0.0
 # DSL format support
 python-hcl2>=3.0.5
-starlark>=0.4.0
+# Optional: starlark>=0.4.0 (fallback parser available if not installed)
 
 # Networking and communication
 requests>=2.28.0
@@ -30,7 +30,7 @@ onvif-zeep
 opencv-python>=4.6.0
 numpy>=1.22.3
 Pillow>=9.1.0
-pyaudio>=0.2.13
+# pyaudio>=0.2.13  # Optional: Uncomment if you have the necessary build dependencies
 scipy>=1.12.0
 ffmpeg-python>=0.2.0
 sounddevice>=0.4.6

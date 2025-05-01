@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.32] - 2025-05-01
+
+### Added
+- Changes in src/unitapi/dsl/parsers/starlark_parser_fixed.py
+- Changes in tests/test_protocols.py
+- Changes in tests/test_security.py
+
 ## [0.1.31] - 2025-05-01
 
 ## [0.1.30] - 2025-05-01
