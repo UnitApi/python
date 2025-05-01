@@ -83,3 +83,7 @@ examples/dsl/ua
 examples/dsl/ua/example.ua
 examples/dsl/ua/test.py
 
+
+jak kolorwac skladnie dla formatu .ua? do jakiego fomatu jest najbardziej podobny?
+
+stworz i opisz sposob uruchomienia, przyklady dsl w formacie .ua na PC1 i PC2 aby np wyslac text do klawiatury z pc1 do pc1?

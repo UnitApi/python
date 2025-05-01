@@ -12,7 +12,7 @@ import signal
 import argparse
 import logging
 
-from .core.config import ConfigManager
+from .config.loader import ConfigLoader
 from .core.logging import LoggingManager
 from .core.mcp import MCPBroker, MCPClient
 from .core.utils import check_dependencies, get_system_info, ensure_dir
@@ -38,8 +38,9 @@ class unitapi:
         self.managers = {}
 
         # Inicjalizacja konfiguracji
-        self.config_manager = ConfigManager(config_path)
-        self.config = self.config_manager.config
+        self.config = {}
+        if config_path:
+            self.config = ConfigLoader.load(config_path)
 
         # Inicjalizacja logowania
         self.logging_manager = LoggingManager(self.config)

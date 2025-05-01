@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.29] - 2025-05-01
+
+### Added
+- Changes in examples/dsl/hcl/README.md
+- Changes in examples/dsl/hcl/example.hcl
+- Changes in examples/dsl/hcl/test.py
+- Changes in examples/dsl/json/README.md
+- Changes in examples/dsl/json/example.json
+- Changes in examples/dsl/json/test.py
+- Changes in examples/dsl/star/README.md
+- Changes in examples/dsl/star/example.star
+- Changes in examples/dsl/star/test.py
+- Changes in examples/dsl/ua/README.md
+- Changes in examples/dsl/ua/example.ua
+- Changes in examples/dsl/ua/keyboard_client.ua
+- Changes in examples/dsl/ua/keyboard_client_interactive.ua
+- Changes in examples/dsl/ua/keyboard_control_README.md
+- Changes in examples/dsl/ua/keyboard_server.ua
+- Changes in examples/dsl/ua/test.py
+- Changes in examples/dsl/ua/test_keyboard_control.py
+- Changes in examples/dsl/yaml/README.md
+- Changes in examples/dsl/yaml/example.yaml
+- Changes in examples/dsl/yaml/test.py
+- Changes in src/unitapi/core/logging.py
+- Changes in src/unitapi/core/mcp.py
+- Changes in src/unitapi/core/utils.py
+- Changes in src/unitapi/device_managers/__init__.py
+- Changes in src/unitapi/device_managers/local_devices.py
+- Changes in src/unitapi/device_managers/network_devices.py
+
+### Changed
+- Changes in TODO.txt
+- Changes in examples/dsl/README.md
+- Changes in src/unitapi/main.py
+
 ## [0.1.28] - 2025-05-01
 
 ### Added
