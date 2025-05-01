@@ -1,6 +1,6 @@
 """Version information for unitapi package."""
 
-__version__ = version = "0.1.27"
+__version__ = version = "0.1.28"
 
 
 def get_version():

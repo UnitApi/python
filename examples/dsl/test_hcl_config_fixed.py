@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-UnitAPI DSL YAML Configuration Test
+UnitAPI DSL HCL Configuration Test
 
-This script demonstrates how to load, validate, and execute YAML configuration files.
+This script demonstrates how to load, validate, and execute HCL configuration files.
 """
 
 import os
@@ -15,24 +15,25 @@ from pathlib import Path
 # Add the directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from unitapi.main import unitapi as UnitAPI
+# Use direct imports from unitapi package instead of unitapi.main
 from unitapi.config.loader import ConfigLoader
 from unitapi.dsl.validators.schema import validate_config_with_details
 from unitapi.dsl.runtime.executor import DSLExecutor
+from unitapi.core.client import UnitAPIClient
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 async def main():
-    """Main function to test YAML configuration files"""
+    """Main function to test HCL configuration files"""
     # Parse command line arguments
     import argparse
-    parser = argparse.ArgumentParser(description='UnitAPI DSL YAML Configuration Test')
-    parser.add_argument('--config', default='camera_config.yaml', 
-                        help='Path to the YAML configuration file (default: camera_config.yaml)')
+    parser = argparse.ArgumentParser(description='UnitAPI DSL HCL Configuration Test')
+    parser.add_argument('--config', default='microphone_config.hcl', 
+                        help='Path to the HCL configuration file (default: microphone_config.hcl)')
     parser.add_argument('--dry-run', action='store_true', help='Validate without executing')
-    parser.add_argument('--convert-to', choices=['hcl', 'star', 'ua'], 
+    parser.add_argument('--convert-to', choices=['yaml', 'star', 'ua'], 
                         help='Convert the configuration to another format')
     args = parser.parse_args()
     
@@ -61,6 +62,16 @@ async def main():
         logger.info(f"Devices: {len(config.get('devices', []))}")
         logger.info(f"Pipelines: {len(config.get('pipelines', []))}")
         
+        # Display device details
+        logger.info("\nDevice Details:")
+        for device in config.get('devices', []):
+            logger.info(f"  - ID: {device.id}")
+            logger.info(f"    Type: {device.device_type}")
+            logger.info(f"    Capabilities: {', '.join(device.capabilities)}")
+            if hasattr(device, 'metadata') and device.metadata:
+                logger.info(f"    Metadata: {device.metadata}")
+            logger.info("")
+        
         # Convert to another format if requested
         if args.convert_to:
             converted = ConfigLoader.convert(config, args.convert_to)
@@ -77,12 +88,12 @@ async def main():
             logger.info("Dry run completed successfully")
             return
         
-        # Initialize UnitAPI
-        logger.info("Initializing UnitAPI")
-        unitapi = UnitAPI()
+        # Initialize UnitAPI client instead of UnitAPI class
+        logger.info("Initializing UnitAPI client")
+        client = UnitAPIClient()
         
         # Set up executor
-        executor = DSLExecutor(unitapi)
+        executor = DSLExecutor(client)
         
         # Execute the configuration
         logger.info("Executing configuration")

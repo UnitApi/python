@@ -12,13 +12,13 @@ import asyncio
 import logging
 from pathlib import Path
 
-# Add the src directory to the Python path
+# Add the directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from src.unitapi import UnitAPI
-from src.unitapi.config.loader import ConfigLoader
-from src.unitapi.dsl.validators.schema import validate_config_with_details
-from src.unitapi.dsl.runtime.executor import DSLExecutor
+from unitapi.main import unitapi as UnitAPI
+from unitapi.config.loader import ConfigLoader
+from unitapi.dsl.validators.schema import validate_config_with_details
+from unitapi.dsl.runtime.executor import DSLExecutor
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

@@ -73,3 +73,4 @@ pyautogui>=0.9.54
 
 soundfile
 pyttsx3
+hcl
