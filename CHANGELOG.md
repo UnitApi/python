@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.23] - 2025-05-01
+
+### Added
+- Changes in examples/pc/camera/camera_capture.py
+- Changes in examples/pc/camera/camera_frame_capture.py
+- Changes in examples/pc/camera/take_screenshot.py
+- Changes in examples/pc/keyboard/keyboard_text_input.py
+- Changes in examples/pc/microphone/microphone_audio_input.py
+- Changes in examples/pc/microphone/microphone_recording.py
+- Changes in examples/pc/misc/stream_processing.py
+- Changes in examples/pc/mouse/mouse_movement.py
+- Changes in examples/pc/mouse/mouse_movement_pyautogui.py
+- Changes in examples/pc/speaker/speaker_playback_fix.md
+
 ## [0.1.22] - 2025-05-01
 
 ## [0.1.21] - 2025-05-01
