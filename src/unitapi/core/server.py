@@ -99,3 +99,7 @@ class UnitAPIServer:
         # For now, we'll just simulate a running server
         while True:
             await asyncio.sleep(1)
+
+
+# Alias for backward compatibility
+Server = UnitAPIServer

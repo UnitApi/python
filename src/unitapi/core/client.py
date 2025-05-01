@@ -205,3 +205,7 @@ class UnitAPIClient:
                 "message": f"Command '{command}' executed on {device_id}",
                 "params": params or {},
             }
+
+
+# Alias for backward compatibility
+Client = UnitAPIClient

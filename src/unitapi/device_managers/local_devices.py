@@ -14,9 +14,9 @@ from ..devices.keyboard import KeyboardDevice as Keyboard
 from ..devices.mouse import MouseDevice as Mouse
 from ..devices.camera import CameraDevice as Camera
 from ..devices.microphone import MicrophoneDevice as Microphone
-from ..devices.touchscreen import Touchscreen
-from ..devices.gamepad import Gamepad
-from ..devices.gpio import GPIO
+from ..devices.touchscreen import TouchscreenDevice as Touchscreen
+from ..devices.gamepad import GamepadDevice as Gamepad
+from ..devices.gpio import GPIODevice as GPIO
 
 logger = logging.getLogger("unitapi.device_managers.local")
 
